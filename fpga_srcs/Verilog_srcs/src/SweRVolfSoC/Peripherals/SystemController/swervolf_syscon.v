@@ -46,7 +46,8 @@ module swervolf_syscon
    output reg [31:0] o_wb_rdt,
    output reg 	     o_wb_ack,
    output wire [ 7          :0] AN,
-   output wire [ 6          :0] Digits_Bits);
+   output wire [ 6          :0] Digits_Bits,
+   input wire [4:0] push_btn);
 
    reg [63:0] 	      mtime;
    reg [63:0] 	      mtimecmp;
@@ -247,6 +248,8 @@ module swervolf_syscon
 	3 : o_wb_rdt <= o_nmi_vec;
     //0x18-0x1B
     6 : o_wb_rdt <= {30'd0, irq_ptc_enable, irq_gpio_enable};
+   // 0x1C - 0x1F
+   7: o_wb_rdt <= push_btn;
 	//0x20-0x23
 	8 : o_wb_rdt <= mtime[31:0];
 	//0x24-0x27

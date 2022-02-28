@@ -78,6 +78,7 @@ module swervolf_core
     input wire 	       i_ram_init_done,
     input wire 	       i_ram_init_error,
     inout wire [31:0]  io_data,
+    inout wire [31:0]  io_data_push_btn,
     output wire [ 7          :0] AN,
     output wire [ 6          :0] Digits_Bits,
     output wire        o_accel_sclk,
@@ -235,7 +236,8 @@ module swervolf_core
       .o_wb_rdt         (wb_s2m_sys_dat),
       .o_wb_ack         (wb_s2m_sys_ack),
       .AN (AN),
-      .Digits_Bits (Digits_Bits));
+      .Digits_Bits (Digits_Bits),
+      .push_btn({io_data_push_btn[0], io_data_push_btn[1], io_data_push_btn[2], io_data_push_btn[3], io_data_push_btn[4]}));
 
    assign wb_s2m_sys_err = 1'b0;
    assign wb_s2m_sys_rty = 1'b0;
