@@ -80,7 +80,7 @@ module swervolf_core
     inout wire [31:0]  io_data,
     inout wire [31:0]  io_data_push_btn,
     output wire [ 7          :0] AN,
-    output wire [ 6          :0] Digits_Bits,
+    output wire [ 7          :0] Digits_Bits,
     output wire        o_accel_sclk,
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,

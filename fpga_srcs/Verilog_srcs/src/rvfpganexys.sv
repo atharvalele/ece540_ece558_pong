@@ -53,7 +53,7 @@ module rvfpganexys
     inout wire         BTNL,
     inout wire         BTNC,
     output reg [7:0]   AN,
-    output reg         CA, CB, CC, CD, CE, CF, CG,
+    output reg         CA, CB, CC, CD, CE, CF, CG, DP,
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,
     input wire         i_accel_miso,
@@ -261,7 +261,7 @@ module rvfpganexys
       .i_ram_init_error (litedram_init_error),
       .io_data        ({i_sw[15:0],gpio_out[15:0]}),
       .AN (AN),
-      .Digits_Bits ({CA,CB,CC,CD,CE,CF,CG}),
+      .Digits_Bits({DP, CG, CF, CE, CD, CC, CB, CA}), // Flipped order from original code
       .o_accel_sclk   (accel_sclk),
       .o_accel_cs_n   (o_accel_cs_n),
       .o_accel_mosi   (o_accel_mosi),

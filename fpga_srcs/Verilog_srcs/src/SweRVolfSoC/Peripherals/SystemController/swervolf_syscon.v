@@ -46,7 +46,7 @@ module swervolf_syscon
    output reg [31:0] o_wb_rdt,
    output reg 	     o_wb_ack,
    output wire [ 7          :0] AN,
-   output wire [ 6          :0] Digits_Bits,
+   output wire [ 7          :0] Digits_Bits,
    input wire [4:0] push_btn);
 
    reg [63:0] 	      mtime;
@@ -217,15 +217,18 @@ module swervolf_syscon
 	     if (i_wb_sel[0])
 	       irq_timer_en <= i_wb_dat[0];
 	  end
-  	14 : begin
-  	   if (i_wb_sel[0]) Enables_Reg[7:0]  <= i_wb_dat[7:0];
-  	end
-  	15 : begin
-       if (i_wb_sel[0]) Digits_Reg[7:0]   <= i_wb_dat[7:0];
-       if (i_wb_sel[1]) Digits_Reg[15:8]  <= i_wb_dat[15:8];
-       if (i_wb_sel[2]) Digits_Reg[23:16] <= i_wb_dat[23:16];
-       if (i_wb_sel[3]) Digits_Reg[31:24] <= i_wb_dat[31:24];
-  	end
+  	  	14 : begin // 0x38 - 0x3b
+         if (i_wb_sel[0]) Segments_Digit0[7:0] <= i_wb_dat[7:0];
+         if (i_wb_sel[1]) Segments_Digit1[7:0] <= i_wb_dat[15:8];
+         if (i_wb_sel[2]) Segments_Digit2[7:0] <= i_wb_dat[23:16];
+         if (i_wb_sel[3]) Segments_Digit3[7:0] <= i_wb_dat[31:24];
+  	   end
+  	  	15 : begin // 0x3c - 0x3f
+         if (i_wb_sel[0]) Segments_Digit4[7:0] <= i_wb_dat[7:0];
+         if (i_wb_sel[1]) Segments_Digit5[7:0] <= i_wb_dat[15:8];
+         if (i_wb_sel[2]) Segments_Digit6[7:0] <= i_wb_dat[23:16];
+         if (i_wb_sel[3]) Segments_Digit7[7:0] <= i_wb_dat[31:24];
+  	   end
 	endcase
 
       case (i_wb_adr[5:2])
@@ -278,14 +281,27 @@ module swervolf_syscon
 
 	// Eight-Digit 7 Segment Displays
 
-	  reg  [ 7:0]  Enables_Reg;
-	  reg  [31:0]  Digits_Reg;
+     // 8x8 registers to hold values for segments
+     reg    [ 7:0] Segments_Digit0;
+     reg    [ 7:0] Segments_Digit1;
+     reg    [ 7:0] Segments_Digit2;
+     reg    [ 7:0] Segments_Digit3;
+     reg    [ 7:0] Segments_Digit4;
+     reg    [ 7:0] Segments_Digit5;
+     reg    [ 7:0] Segments_Digit6;
+     reg    [ 7:0] Segments_Digit7;
 
 	  SevSegDisplays_Controller SegDispl_Ctr(
 	    .clk               (i_clk),    
 	    .rst_n             (i_rst),
-	    .Enables_Reg       (Enables_Reg), 
-	    .Digits_Reg        (Digits_Reg), 
+	    .Segments_Digit0   (Segments_Digit0),
+       .Segments_Digit1   (Segments_Digit1),
+       .Segments_Digit2   (Segments_Digit2),
+       .Segments_Digit3   (Segments_Digit3),
+       .Segments_Digit4   (Segments_Digit4),
+       .Segments_Digit5   (Segments_Digit5),
+       .Segments_Digit6   (Segments_Digit6),
+       .Segments_Digit7   (Segments_Digit7),
 	    .AN                (AN),
 	    .Digits_Bits       (Digits_Bits)
 	  );
@@ -300,18 +316,24 @@ parameter COUNT_MAX = 20;
 module SevSegDisplays_Controller(
                      input wire           clk,
                      input wire           rst_n,
-                     input wire    [ 7:0] Enables_Reg,
-                     input wire    [31:0] Digits_Reg,
+                     input wire    [ 7:0] Segments_Digit0,
+                     input wire    [ 7:0] Segments_Digit1,
+                     input wire    [ 7:0] Segments_Digit2,
+                     input wire    [ 7:0] Segments_Digit3,
+                     input wire    [ 7:0] Segments_Digit4,
+                     input wire    [ 7:0] Segments_Digit5,
+                     input wire    [ 7:0] Segments_Digit6,
+                     input wire    [ 7:0] Segments_Digit7,
                      output wire   [ 7:0] AN,
-                     output wire   [ 6:0] Digits_Bits);
+                     output wire   [ 7:0] Digits_Bits);
 
   wire [(COUNT_MAX-1):0] countSelection;
   wire [ 3:0] DecNumber;
   wire overflow_o_count;
 
 
-
-  SevenSegDecoder SevSegDec(.data(DecNumber), .seg(Digits_Bits));
+  // We don't need this now, we can show anything we want instead of just numbers
+  // SevenSegDecoder SevSegDec(.data(DecNumber), .seg(Digits_Bits));
 
 
 
@@ -321,14 +343,14 @@ module SevSegDisplays_Controller(
 
   wire [ 7:0] [7:0] enable;
 
-  assign enable[0] = (Enables_Reg | 8'hfe);
-  assign enable[1] = (Enables_Reg | 8'hfd);
-  assign enable[2] = (Enables_Reg | 8'hfb);
-  assign enable[3] = (Enables_Reg | 8'hf7);
-  assign enable[4] = (Enables_Reg | 8'hef);
-  assign enable[5] = (Enables_Reg | 8'hdf);
-  assign enable[6] = (Enables_Reg | 8'hbf);
-  assign enable[7] = (Enables_Reg | 8'h7f);
+  assign enable[0] = 8'hfe;
+  assign enable[1] = 8'hfd;
+  assign enable[2] = 8'hfb;
+  assign enable[3] = 8'hf7;
+  assign enable[4] = 8'hef;
+  assign enable[5] = 8'hdf;
+  assign enable[6] = 8'hbf;
+  assign enable[7] = 8'h7f;
 
   SevSegMux
   #(
@@ -343,33 +365,33 @@ module SevSegDisplays_Controller(
   );
 
 
-  wire [ 7:0] [3:0] digits_concat;
+  wire [ 7:0] [7:0] digits_concat;
 
-  assign digits_concat[0] = Digits_Reg[3:0];
-  assign digits_concat[1] = Digits_Reg[7:4];
-  assign digits_concat[2] = Digits_Reg[11:8];
-  assign digits_concat[3] = Digits_Reg[15:12];
-  assign digits_concat[4] = Digits_Reg[19:16];
-  assign digits_concat[5] = Digits_Reg[23:20];
-  assign digits_concat[6] = Digits_Reg[27:24];
-  assign digits_concat[7] = Digits_Reg[31:28];
+  assign digits_concat[0] = Segments_Digit0;
+  assign digits_concat[1] = Segments_Digit1;
+  assign digits_concat[2] = Segments_Digit2;
+  assign digits_concat[3] = Segments_Digit3;
+  assign digits_concat[4] = Segments_Digit4;
+  assign digits_concat[5] = Segments_Digit5;
+  assign digits_concat[6] = Segments_Digit6;
+  assign digits_concat[7] = Segments_Digit7;
 
   SevSegMux
   #(
-    .DATA_WIDTH(4),
+    .DATA_WIDTH(8),
     .N_IN(8)
   )
   Select_Digits
   (
     .IN_DATA(digits_concat),
-    .OUT_DATA(DecNumber),
+    .OUT_DATA(Digits_Bits),
     .SEL(countSelection[(COUNT_MAX-1):(COUNT_MAX-3)])
   );
 
 endmodule
 
 
-
+/*
 module SevenSegDecoder(input wire     [3:0] data,
                            output reg [6:0] seg);
   always @(*)
@@ -395,7 +417,7 @@ module SevenSegDecoder(input wire     [3:0] data,
             seg = 7'b111_1111;
     endcase
 endmodule
-
+*/
 
 
 module SevSegMux
