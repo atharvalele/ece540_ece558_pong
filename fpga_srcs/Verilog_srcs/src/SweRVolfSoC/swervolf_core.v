@@ -84,7 +84,12 @@ module swervolf_core
     output wire        o_accel_sclk,
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,
-    input wire         i_accel_miso);
+    input wire         i_accel_miso,
+    output wire [3:0]  VGA_R,
+    output wire [3:0]  VGA_G,
+    output wire [3:0]  VGA_B,
+    output wire        VGA_HS,
+    output wire        VGA_VS);
 
    localparam BOOTROM_SIZE = 32'h1000;
 
@@ -238,6 +243,29 @@ module swervolf_core
       .AN (AN),
       .Digits_Bits (Digits_Bits),
       .push_btn({io_data_push_btn[0], io_data_push_btn[1], io_data_push_btn[2], io_data_push_btn[3], io_data_push_btn[4]}));
+
+   vga_controller vgacon 
+   (
+     .clk       (clk),
+     .reset     (rstn),
+     .i_wb_clk  (clk),
+     .i_rst     (wb_rst),
+     .VGA_R     (VGA_R),
+     .VGA_G     (VGA_G),
+     .VGA_B     (VGA_B),
+     .VGA_HS    (VGA_HS),
+     .VGA_VS    (VGA_VS),
+
+     .i_wb_adr  (wb_m2s_vga_adr[5:0]),
+     .i_wb_dat  (wb_m2s_vga_dat),
+     .i_wb_sel  (wb_m2s_vga_sel),
+     .i_wb_we   (wb_m2s_vga_we),
+     .i_wb_cyc  (wb_m2s_vga_cyc),
+     .i_wb_stb  (wb_m2s_vga_stb),
+     .o_wb_rdt  (wb_s2m_vga_dat),
+     .o_wb_ack  (wb_s2m_vga_ack)
+   ); 
+
 
    assign wb_s2m_sys_err = 1'b0;
    assign wb_s2m_sys_rty = 1'b0;

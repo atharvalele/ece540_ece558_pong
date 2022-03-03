@@ -33,8 +33,8 @@ set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk }]
 
 set_property -dict { PACKAGE_PIN C12   IOSTANDARD LVCMOS33 } [get_ports { rstn }];
 
-set_property -dict { PACKAGE_PIN C4    IOSTANDARD LVCMOS33 } [get_ports i_uart_rx]
-set_property -dict { PACKAGE_PIN D4    IOSTANDARD LVCMOS33 } [get_ports o_uart_tx]
+set_property -dict { PACKAGE_PIN E18    IOSTANDARD LVCMOS33 } [get_ports i_uart_rx]
+set_property -dict { PACKAGE_PIN G17    IOSTANDARD LVCMOS33 } [get_ports o_uart_tx]
 
 
 set_property -dict { PACKAGE_PIN K17   IOSTANDARD LVCMOS33 } [get_ports o_flash_mosi]; #IO_L1P_T0_D00_MOSI_14 Sch=qspi_dq[0]

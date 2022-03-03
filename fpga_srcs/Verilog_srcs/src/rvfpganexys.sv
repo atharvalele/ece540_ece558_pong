@@ -57,7 +57,12 @@ module rvfpganexys
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,
     input wire         i_accel_miso,
-    output wire        accel_sclk);
+    output wire        accel_sclk,
+    output wire [3:0]  VGA_R,
+    output wire [3:0]  VGA_G,
+    output wire [3:0]  VGA_B,
+    output wire        VGA_HS,
+    output wire        VGA_VS);
 
    wire [15:0] 	       gpio_out;
 
@@ -265,7 +270,12 @@ module rvfpganexys
       .o_accel_sclk   (accel_sclk),
       .o_accel_cs_n   (o_accel_cs_n),
       .o_accel_mosi   (o_accel_mosi),
-      .i_accel_miso   (i_accel_miso));
+      .i_accel_miso   (i_accel_miso),
+      .VGA_R     (VGA_R),
+      .VGA_G     (VGA_G),
+      .VGA_B     (VGA_B),
+      .VGA_HS    (VGA_HS),
+      .VGA_VS    (VGA_VS));
 
    always @(posedge clk_core) begin
       o_led[15:0] <= gpio_out[15:0];
