@@ -50,6 +50,12 @@ extern char uart_tx_buf[UART_BUF_SIZE];
 extern struct sw_fifo_t uart_rx_fifo;
 extern char uart_rx_buf[UART_BUF_SIZE];
 
+/* UART flags */
+extern u08_t rx_index;
+extern u08_t rx_flag;
+extern u08_t rx_tout;
+#define uart_timeout()            if (rx_tout) {rx_tout--;}
+
 /* Initialize UART */
 void uart_init(u32_t baudrate);
 void uart_interrupt_enable(void);

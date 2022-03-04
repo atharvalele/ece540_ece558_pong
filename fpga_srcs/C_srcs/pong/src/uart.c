@@ -16,6 +16,10 @@ char uart_rx_buf[UART_BUF_SIZE];
 struct sw_fifo_t uart_tx_fifo;
 struct sw_fifo_t uart_rx_fifo;
 
+u08_t rx_index;
+u08_t rx_flag;
+u08_t rx_tout;
+
 /* Initialize UART */
 void uart_init(u32_t baudrate)
 {
@@ -35,6 +39,9 @@ void uart_init(u32_t baudrate)
     /* Initialize FIFOs */
     sw_fifo_init(&uart_rx_fifo, uart_rx_buf, UART_BUF_SIZE);
     sw_fifo_init(&uart_tx_fifo, uart_tx_buf, UART_BUF_SIZE);
+
+    /* Set timeout */
+    rx_tout = UART_RX_TOUT;
 }
 
 void uart_interrupt_enable(void)
@@ -99,10 +106,15 @@ void uart_isr(void)
 
     /* Receiver data available interrupt */
     if (irq & 0x04) {
-        /* Check if receiver data available, echo back */
+        /* Check if receiver data available, add to buffer, reset timeout counter */
         if((READ_REG(UART_BASE_ADDR, UART_LSR_OFFSET) & UART_LSR_RXRDY_BIT) == 1) {
             c = READ_REG(UART_BASE_ADDR, 0);
             sw_fifo_write(&uart_rx_fifo, &c, 1);
+            rx_index++;
+            if (rx_index > UART_BUF_SIZE)
+                rx_index = 0;
+            rx_flag = 1;
+            rx_tout = UART_RX_TOUT;
         }
     }
 }
