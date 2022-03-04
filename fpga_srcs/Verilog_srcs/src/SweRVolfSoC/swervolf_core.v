@@ -80,16 +80,16 @@ module swervolf_core
     inout wire [31:0]  io_data,
     inout wire [31:0]  io_data_push_btn,
     output wire [ 7          :0] AN,
-    output wire [ 7          :0] Digits_Bits,
+    output wire [ 7          :0] Digits_Bits, // Make Digits_Bits 8 bit wide for DP support
     output wire        o_accel_sclk,
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,
     input wire         i_accel_miso,
+    input wire         VGA_clk,
     output wire [3:0]  VGA_R,
     output wire [3:0]  VGA_G,
     output wire [3:0]  VGA_B,
-    output wire        VGA_HS,
-    output wire        VGA_VS);
+    output wire        VGA_HS, VGA_VS);
 
    localparam BOOTROM_SIZE = 32'h1000;
 
@@ -244,29 +244,6 @@ module swervolf_core
       .Digits_Bits (Digits_Bits),
       .push_btn({io_data_push_btn[0], io_data_push_btn[1], io_data_push_btn[2], io_data_push_btn[3], io_data_push_btn[4]}));
 
-   vga_controller vgacon 
-   (
-     .clk       (clk),
-     .reset     (rstn),
-     .i_wb_clk  (clk),
-     .i_rst     (wb_rst),
-     .VGA_R     (VGA_R),
-     .VGA_G     (VGA_G),
-     .VGA_B     (VGA_B),
-     .VGA_HS    (VGA_HS),
-     .VGA_VS    (VGA_VS),
-
-     .i_wb_adr  (wb_m2s_vga_adr[5:0]),
-     .i_wb_dat  (wb_m2s_vga_dat),
-     .i_wb_sel  (wb_m2s_vga_sel),
-     .i_wb_we   (wb_m2s_vga_we),
-     .i_wb_cyc  (wb_m2s_vga_cyc),
-     .i_wb_stb  (wb_m2s_vga_stb),
-     .o_wb_rdt  (wb_s2m_vga_dat),
-     .o_wb_ack  (wb_s2m_vga_ack)
-   ); 
-
-
    assign wb_s2m_sys_err = 1'b0;
    assign wb_s2m_sys_rty = 1'b0;
 
@@ -365,6 +342,9 @@ module swervolf_core
    bidirec gpio30 (.oe(en_gpio[30]), .inp(o_gpio[30]), .outp(i_gpio[30]), .bidir(io_data[30]));
    bidirec gpio31 (.oe(en_gpio[31]), .inp(o_gpio[31]), .outp(i_gpio[31]), .bidir(io_data[31]));
 
+
+   
+
    gpio_top gpio_module(
         .wb_clk_i     (clk), 
         .wb_rst_i     (wb_rst), 
@@ -383,7 +363,36 @@ module swervolf_core
         .ext_pad_o     (o_gpio[31:0]),
         .ext_padoe_o   (en_gpio));
 
+  // GPIO for Push Button Switches
+   wire [31:0] en_gpio_btn;
+   wire       gpio_irq_btn;
+   wire [31:0] i_gpio_btn;
+   wire [31:0] o_gpio_btn;
 
+   bidirec gpio32 (.oe(en_gpio_btn[0]), .inp(o_gpio_btn[0]), .outp(i_gpio_btn[0]), .bidir(io_data_push_btn[0]));
+   bidirec gpio33 (.oe(en_gpio_btn[1]), .inp(o_gpio_btn[1]), .outp(i_gpio_btn[1]), .bidir(io_data_push_btn[1]));
+   bidirec gpio34 (.oe(en_gpio_btn[2]), .inp(o_gpio_btn[2]), .outp(i_gpio_btn[2]), .bidir(io_data_push_btn[2]));
+   bidirec gpio35 (.oe(en_gpio_btn[3]), .inp(o_gpio_btn[3]), .outp(i_gpio_btn[3]), .bidir(io_data_push_btn[3]));
+   bidirec gpio36 (.oe(en_gpio_btn[4]), .inp(o_gpio_btn[4]), .outp(i_gpio_btn[4]), .bidir(io_data_push_btn[4]));
+/*
+     gpio_top gpio_module_push_btn(
+        .wb_clk_i     (clk), 
+        .wb_rst_i     (wb_rst), 
+        .wb_cyc_i     (wb_m2s_gpio_push_btn_cyc), 
+        .wb_adr_i     ({2'b0,wb_m2s_gpio_push_btn_adr[5:2],2'b0}), 
+        .wb_dat_i     (wb_m2s_gpio_push_btn_dat), 
+        .wb_sel_i     (4'b1111),
+        .wb_we_i      (wb_m2s_gpio_push_btn_we), 
+        .wb_stb_i     (wb_m2s_gpio_push_btn_stb), 
+        .wb_dat_o     (wb_s2m_gpio_push_btn_dat),
+        .wb_ack_o     (wb_s2m_gpio_push_btn_ack), 
+        .wb_err_o     (wb_s2m_gpio_push_btn_err),
+        .wb_inta_o    (gpio_irq_btn),
+        // External GPIO Interface
+        .ext_pad_i     (i_gpio_btn[31:0]),
+        .ext_pad_o     (o_gpio_btn[31:0]),
+        .ext_padoe_o   (en_gpio_btn));
+*/
 
    // PTC
    wire        ptc_irq;
@@ -657,6 +666,17 @@ module swervolf_core
 
       .scan_mode  (1'b0),
       .mbist_mode (1'b0));
+
+  // VGA Controller Instance
+  vga_controller vga(
+    .clock(VGA_clk),
+    .reset(rstn),
+    .VGA_R(VGA_R),
+    .VGA_G(VGA_G),
+    .VGA_B(VGA_B),
+    .VGA_HS(VGA_HS),
+    .VGA_VS(VGA_VS)
+  );
 
 endmodule
 

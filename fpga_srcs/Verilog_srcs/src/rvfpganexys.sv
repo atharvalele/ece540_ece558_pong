@@ -53,7 +53,7 @@ module rvfpganexys
     inout wire         BTNL,
     inout wire         BTNC,
     output reg [7:0]   AN,
-    output reg         CA, CB, CC, CD, CE, CF, CG, DP,
+    output reg         CA, CB, CC, CD, CE, CF, CG, DP, // Add DP
     output wire        o_accel_cs_n,
     output wire        o_accel_mosi,
     input wire         i_accel_miso,
@@ -61,8 +61,7 @@ module rvfpganexys
     output wire [3:0]  VGA_R,
     output wire [3:0]  VGA_G,
     output wire [3:0]  VGA_B,
-    output wire        VGA_HS,
-    output wire        VGA_VS);
+    output wire        VGA_HS, VGA_VS);
 
    wire [15:0] 	       gpio_out;
 
@@ -83,6 +82,18 @@ module rvfpganexys
       .i_rst (user_rst),
       .o_clk_core (clk_core),
       .o_rst_core (rst_core));
+
+    // VGA Clock Generator
+    wire vga_clk;
+    clk_wiz_0 vga_clock_inst
+      (
+        // Clock out ports
+        .clk_out1(vga_clk),     // output clk_31_5
+        // Status and control signals
+        .reset(1'b0), // input reset
+        // Clock in ports
+        .clk_in1(clk)
+      ); 
 
    AXI_BUS #(32, 64, 6, 1) mem();
    AXI_BUS #(32, 64, 6, 1) cpu();
@@ -265,17 +276,19 @@ module rvfpganexys
       .i_ram_init_done  (litedram_init_done),
       .i_ram_init_error (litedram_init_error),
       .io_data        ({i_sw[15:0],gpio_out[15:0]}),
+      .io_data_push_btn ({27'b0, BTNU, BTNR, BTND, BTNL, BTNC}),
       .AN (AN),
       .Digits_Bits({DP, CG, CF, CE, CD, CC, CB, CA}), // Flipped order from original code
       .o_accel_sclk   (accel_sclk),
       .o_accel_cs_n   (o_accel_cs_n),
       .o_accel_mosi   (o_accel_mosi),
       .i_accel_miso   (i_accel_miso),
-      .VGA_R     (VGA_R),
-      .VGA_G     (VGA_G),
-      .VGA_B     (VGA_B),
-      .VGA_HS    (VGA_HS),
-      .VGA_VS    (VGA_VS));
+      .VGA_clk        (vga_clk),
+      .VGA_R          (VGA_R),
+      .VGA_G          (VGA_G),
+      .VGA_B          (VGA_B),
+      .VGA_HS         (VGA_HS),
+      .VGA_VS         (VGA_VS));
 
    always @(posedge clk_core) begin
       o_led[15:0] <= gpio_out[15:0];
