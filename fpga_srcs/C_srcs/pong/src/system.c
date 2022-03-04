@@ -5,6 +5,7 @@
  */
 
 #include "system.h"
+#include "timer.h"
 #include "uart.h"
 
 /* Initialize interrupt controller */
@@ -65,6 +66,10 @@ static void peripheral_interrupts_enable()
     ExternalIntLine_Initialization(1, 6, uart_isr);
     uart_interrupt_enable();
 
+    /* Setup Timer IRQ */
+    ExternalIntLine_Initialization(3, 6, timer_isr);
+    WRITE_REG(SELECT_INT, 0, 0x02);
+
     /* Enable interrupts */
     pspInterruptsEnable();                              /* Enable all interrupts in mstatus CSR */
     M_PSP_SET_CSR(D_PSP_MIE_NUM, D_PSP_MIE_MEIE_MASK);  /* Enable external interrupts in mie CSR */
@@ -74,6 +79,7 @@ static void peripheral_interrupts_enable()
 void system_init(void)
 {
     uart_init(115200);
+    timer_init();
     interrupts_init();
     peripheral_interrupts_enable();
 }
