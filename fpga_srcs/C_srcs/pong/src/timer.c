@@ -5,6 +5,7 @@
  */
 
 #include "timer.h"
+#include "uart.h"
 #include "psp_api.h"
 #include "bsp_external_interrupts.h"
 
@@ -41,6 +42,9 @@ void timer_isr(void)
 
     /* Stop the generation of the specific external interrupt */
     bspClearExtInterrupt(3);
+
+    /* UART Timeout */
+    uart_timeout();
 
     msec++;
     if (msec >= 1000) {
