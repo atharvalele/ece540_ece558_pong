@@ -82,12 +82,19 @@ void uart_isr(void)
 
     char c;
     u16_t bytes;
+    u32_t reg;
 
     /* TX holding register empty interrupt */
     if (irq & 0x02) {
         bytes = sw_fifo_read(&uart_tx_fifo, &c, 1);
-        if (bytes != 0)
+        if (bytes != 0) {
             WRITE_REG(UART_BASE_ADDR, 0, (c));
+        } else {
+            /* Disable TXE interrupt */
+            reg = READ_REG(UART_BASE_ADDR, UART_IER_OFFSET);
+            reg &= ~UART_IE_TXE_BIT;
+            WRITE_REG(UART_BASE_ADDR, UART_IER_OFFSET, reg);
+        }
     }
 
     /* Receiver data available interrupt */
