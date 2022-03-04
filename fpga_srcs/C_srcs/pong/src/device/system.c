@@ -4,9 +4,9 @@
  * Author: Atharva Lele <atharva@pdx.edu>
  */
 
-#include "system.h"
-#include "timer.h"
-#include "uart.h"
+#include "device/system.h"
+#include "device/timer.h"
+#include "device/uart.h"
 
 /* Initialize interrupt controller */
 void interrupts_init(void)

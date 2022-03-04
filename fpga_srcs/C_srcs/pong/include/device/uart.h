@@ -11,7 +11,7 @@
 
 #include "bsp_mem_map.h"
 
-#include "sw_fifo.h"
+#include "utils/sw_fifo.h"
 
 /* Defines for UART */
 #define UART_BASE_ADDR          0x80002000

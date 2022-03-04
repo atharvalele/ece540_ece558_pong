@@ -4,7 +4,7 @@
  * Author: Atharva Lele <atharva@pdx.edu>
  */
 
-#include "sw_fifo.h"
+#include "utils/sw_fifo.h"
 
 /* Initialize the FIFO with given size */
 void sw_fifo_init(struct sw_fifo_t *fifo, char *buf, u16_t size)

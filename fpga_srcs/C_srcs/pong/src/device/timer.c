@@ -4,8 +4,8 @@
  * Author: Atharva Lele <atharva@pdx.edu>
  */
 
-#include "timer.h"
-#include "uart.h"
+#include "device/timer.h"
+#include "device/uart.h"
 #include "psp_api.h"
 #include "bsp_external_interrupts.h"
 

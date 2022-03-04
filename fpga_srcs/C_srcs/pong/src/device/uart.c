@@ -5,7 +5,7 @@
  */
 
 #include "commondefs.h"
-#include "uart.h"
+#include "device/uart.h"
 #include <string.h>
 
 #include "bsp_external_interrupts.h"
