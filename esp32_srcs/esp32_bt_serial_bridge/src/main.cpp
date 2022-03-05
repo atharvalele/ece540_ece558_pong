@@ -1,7 +1,15 @@
 #include <Arduino.h>
 
+#include "bt.h"
+
 void setup() {
-  // put your setup code here, to run once:
+  /* Init UART serial ports */
+  Serial.begin(115200);
+
+  /* Init Bluetooth */
+  btSetup();
+
+  Serial.println("Started!");
 }
 
 void loop() {
