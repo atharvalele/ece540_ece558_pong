@@ -675,7 +675,17 @@ module swervolf_core
     .VGA_G(VGA_G),
     .VGA_B(VGA_B),
     .VGA_HS(VGA_HS),
-    .VGA_VS(VGA_VS)
+    .VGA_VS(VGA_VS),
+    .wb_clk(clk),
+    .wb_rst(wb_rst),
+    .i_wb_adr         (wb_m2s_vga_adr[5:0]),
+    .i_wb_dat         (wb_m2s_vga_dat),
+    .i_wb_sel         (wb_m2s_vga_sel),
+    .i_wb_we          (wb_m2s_vga_we),
+    .i_wb_cyc         (wb_m2s_vga_cyc),
+    .i_wb_stb         (wb_m2s_vga_stb),
+    .o_wb_rdt         (wb_s2m_vga_dat),
+    .o_wb_ack         (wb_s2m_vga_ack)
   );
 
 endmodule
