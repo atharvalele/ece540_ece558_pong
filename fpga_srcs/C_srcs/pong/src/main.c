@@ -1,5 +1,5 @@
-#include "system.h"
-#include "timer.h"
+#include "device/system.h"
+#include "device/timer.h"
 
 int main()
 {
