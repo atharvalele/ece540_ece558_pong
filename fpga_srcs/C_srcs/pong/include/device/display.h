@@ -23,6 +23,5 @@
 
 void display_init();
 void draw_pixel(u16_t row, u16_t col,  u08_t value);
-u32_t calculate_frame_addr(u16_t row, u16_t col);
 void create_divider();
 #endif //__DISPLAY_H__

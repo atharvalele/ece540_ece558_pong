@@ -17,14 +17,15 @@ void display_init()
             draw_pixel(i, j, PIXEL_OFF);
 }
 
-u32_t calculate_frame_addr(u16_t row, u16_t col)
+static inline u32_t calculate_frame_addr(u16_t x, u16_t y)
 {
-    return ((row * VGA_ROW) + col);
+    return ((y * VGA_ROW) + x);
 }
 
-void draw_pixel(u16_t row, u16_t col, u08_t value) 
+void draw_pixel(u16_t x, u16_t y, u08_t value) 
 {
-    WRITE_REG(VGA_BASE_ADDR, VGA_PIXEL_ADR_OFFSET, calculate_frame_addr(row, col));
+    u32_t addr = calculate_frame_addr(x, y);
+    WRITE_REG(VGA_BASE_ADDR, VGA_PIXEL_ADR_OFFSET, addr);
     WRITE_REG(VGA_BASE_ADDR, VGA_PIXEL_DAT_OFFSET, value);
 }
 
