@@ -1,7 +1,7 @@
 /**
  * display: ability to draw one pixel on the screen
  * 
- * Author: Ayush Srivastava <ayush@pdx.edu>
+ * Authors: Ayush Srivastava <ayush@pdx.edu>, Atharva Lele <atharva@pdx.edu>
  */
 
 #include "device/display.h"
@@ -10,7 +10,7 @@ void display_init()
 {
     /* Enable write for frame buffer */
     /* From testing we can leave it enabled */
-    WRITE_REG(VGA_BASE_ADDR, VGA_ENABLE_OFFSET, 1);
+    WRITE_REG(VGA_BASE_ADDR, VGA_WRITE_ENABLE_OFFSET, 1);
 
     for(int i = 0; i < 640; i++)
         for(int j = 0; j < 480; j++)
@@ -19,7 +19,7 @@ void display_init()
 
 static inline u32_t calculate_frame_addr(u16_t x, u16_t y)
 {
-    return ((y * VGA_ROW) + x);
+    return ((y * VGA_ROWS) + x);
 }
 
 void draw_pixel(u16_t x, u16_t y, u08_t value) 
