@@ -100,6 +100,27 @@ module vga_controller (
                 8: begin
                     if (i_wb_sel[0]) dina[3:0] <= i_wb_dat[3:0];
                 end
+                // 0x8000300C: horizontal line, L to R, increment address by 1
+                12: begin
+                    if (i_wb_sel[0]) dina[3:0] <= i_wb_dat[3:0];
+                    addra <= addra + 1;
+                end
+                // 0x80003010: horizontal line, R to L, decrement address by 1
+                16: begin
+                    if (i_wb_sel[0]) dina[3:0] <= i_wb_dat[3:0];
+                    addra <= addra - 1;
+                end
+                // 0x80003014: vertical line, top to bottom, increment address by 640
+                20: begin
+                    if (i_wb_sel[0])  dina[3:0] <= i_wb_dat[3:0];
+                    addra <= addra + 640;
+                end
+                // 0x80003018: vertical line, bottom to top, decrement address by 640
+                24: begin
+                    if (i_wb_sel[0]) dina[3:0] <= i_wb_dat[3:0];
+                    addra <= addra - 640;
+                end
+                
 
                 endcase
 
