@@ -26,9 +26,11 @@
 
 /* Global flags */
 extern volatile u08_t secflag;
+extern volatile u08_t ms10flag;
 
 /* Functions */
 void timer_init(void);
 void timer_isr(void);
+void delay_ms(u16_t delay);
 
 #endif

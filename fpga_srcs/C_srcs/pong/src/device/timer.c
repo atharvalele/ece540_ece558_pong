@@ -13,6 +13,7 @@
 volatile u08_t secflag = 0;
 
 volatile u16_t msec = 0;
+volatile u16_t delay_cnt = 0;
 
 #define RPTC_CNTR       0x80001200
 #define RPTC_HRC        0x80001204
@@ -46,9 +47,21 @@ void timer_isr(void)
     /* UART Timeout */
     uart_timeout();
 
-    msec++;
+    msec++; 
+    delay_cnt++;
+    
     if (msec >= 1000) {
         msec = 0;
         secflag = 1;
     }
+}
+
+/* Delay in milliseconds */
+void delay_ms(u16_t delay)
+{
+    delay += delay_cnt ;
+	while (delay != delay_cnt)
+	{
+		asm volatile ("add zero, zero, zero");
+	}
 }
