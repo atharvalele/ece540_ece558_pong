@@ -1,17 +1,17 @@
 #include <Arduino.h>
+#include "network.h"
 
-#include "bt.h"
-
-void setup() {
-  /* Init UART serial ports */
+void setup()
+{
   Serial.begin(115200);
-
-  /* Init Bluetooth */
-  btSetup();
-
-  Serial.println("Started!");
+  Serial.println("Hello");
+  setupWiFi();
+  udpListener(); 
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+    delay(1000);
+    //Send broadcast
+    //Serial.println(WiFi.softAPgetStationNum());
 }
