@@ -15,6 +15,8 @@ static AsyncUDP udp;
 
 static bool p1_flag = false, p2_flag = false;
 
+String message;
+
 void setupWiFi() {
     // Setup ESP as WIFI Access Point
     WiFi.mode(WIFI_AP);
@@ -23,42 +25,45 @@ void setupWiFi() {
     Serial.println(IP);
 }
 
-void p1Parse(String data) {
-    Serial.println(data);
+void parsePacket(AsyncUDPPacket packet) {
+
+    if ((p1_flag == false) && (p2_flag == false)) {
+        p1.ip = packet.remoteIP();
+        p2.name = packet.readString();
+        p1_flag = true;
+        //Serial.println(p1.ip);
+        return;
+    }
+
+    if ((p2_flag == false) && (p1_flag == true) && (p1.ip != packet.remoteIP())) {
+        p2.ip = packet.remoteIP();
+        p2.name = packet.readString();   
+        p2_flag = true;
+        //Serial.println(p2.ip);
+        return;
+    }
+
+    if ((p2_flag == true) && (p2_flag == true)) {
+        if (packet.remoteIP() == p1.ip) {
+            //Serial.println(packet.length());
+            message = "1," + packet.readString();
+            // @TODO: Send message over serial to rvfpga
+        } 
+        else if (packet.remoteIP() == p2.ip) {
+            //Serial.println(packet.length());
+            message = "2," + packet.readString();
+            // @TODO: Send message over serial to rvfpga
+        }
+    }
 }
 
-void p2Parse(String data) {
-    Serial.println(data);
-}
+
 
 void udpListener() {
-    if(udp.listen(UPD_PORT)) {
+    if (udp.listen(UPD_PORT)) {
         udp.onPacket([](AsyncUDPPacket packet) {
-            if(p1_flag == false && p2_flag == false) {
-                p1.ip = packet.remoteIP();
-                p1.name = String((char *)packet.data());
-                p1_flag = true;
-                Serial.println(p1.ip);
-                Serial.println(packet.length());
-            }
-
-            if(p2_flag == false && p1_flag == true && p1.ip != packet.remoteIP()) {
-                p2.ip = packet.remoteIP();
-                p2.name = String((char *)packet.data());    
-                p2_flag = true;
-                Serial.println(p2.ip);
-                Serial.println(packet.length());
-            }
-
-            if(packet.remoteIP() == p1.ip) {
-                Serial.println(packet.length());
-                p1Parse(String((char *)packet.data()));
-            }
-            
-            if(packet.remoteIP() == p2.ip) {
-                Serial.println(packet.length());
-                p2Parse(String((char *)packet.data()));
-            }
+            packet.setTimeout(0);
+            parsePacket(packet);
         });
     }
 }
