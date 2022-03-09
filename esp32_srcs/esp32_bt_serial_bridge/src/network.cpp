@@ -39,6 +39,7 @@ void parsePacket(AsyncUDPPacket packet) {
         p2.ip = packet.remoteIP();
         p2.name = packet.readString();   
         p2_flag = true;
+        sendName();
         //Serial.println(p2.ip);
         return;
     }
@@ -60,10 +61,20 @@ void parsePacket(AsyncUDPPacket packet) {
 
 
 void udpListener() {
-    if (udp.listen(UPD_PORT)) {
+    if (udp.listen(UDP_PORT)) {
         udp.onPacket([](AsyncUDPPacket packet) {
             packet.setTimeout(0);
             parsePacket(packet);
         });
     }
+}
+
+// Send Packet to devices
+void sendName() {
+    AsyncUDPMessage message;
+    message.println(p1.name);
+    udp.sendTo(message, p2.ip, UDP_PORT);
+    message.flush();
+    message.println(p2.name);
+    udp.sendTo(message, p1.ip, UDP_PORT);
 }

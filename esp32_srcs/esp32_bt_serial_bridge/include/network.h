@@ -11,7 +11,7 @@
 #include <WiFi.h>
 #include <AsyncUDP.h>
 
-#define UPD_PORT    1234
+#define UDP_PORT    1234
 
 struct player_t {
     IPAddress ip;
@@ -20,7 +20,6 @@ struct player_t {
 
 void setupWiFi();
 void udpListener();
-void p2Parse(String data);
-void p1Parse(String data);
-
+void parsePacket(AsyncUDPPacket packet);
+void sendName();
 #endif
