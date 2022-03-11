@@ -11,22 +11,25 @@
 #include "psp_types.h"
 #include "hagl_hal.h"
 
+/* Defines */
 #define PADDLE_UP             0
 #define PADDLE_DOWN           1
 #define PADDLE_MOVE_OFFSET    5
 
-#define PADDLE_1_X_POS        40
-#define PADDLE_2_X_POS        (DISPLAY_WIDTH - PADDLE_1_X_POS)
+#define PADDLE_0_X_POS        40
+#define PADDLE_1_X_POS        (DISPLAY_WIDTH - PADDLE_0_X_POS)
 
 #define PADDLE_UPPER_BOUND    (PADDLE_HEIGHT / 2)
 #define PADDLE_LOWER_BOUND    (DISPLAY_HEIGHT - (PADDLE_HEIGHT / 2))
 
 #define PADDLE_HEIGHT         60
 #define PADDLE_WIDTH          10
+#define BALL_RADIUS           3
 
 #define MAX_SCORE             10
 
-/* Game states */
+/* Structs & typedefs */
+// Game states 
 typedef enum {
     PONG_INIT,
     PONG_WAIT_FOR_USER1,
@@ -38,13 +41,18 @@ typedef enum {
     PONG_LAST = 100
 } pong_states_t;
 
-/* Global variables */
+// 2D Vector
+typedef struct {
+    s16_t x;
+    s16_t y;
+} vect_2d;
+
+/* Variables */
+
 
 /* Functions */
 void pong_init(void);
 void pong_task(void);
-
-void paddle_1_move(u08_t dir);
-void paddle_2_move(u08_t dir);
+void pong_paddle_move(u08_t paddle, u08_t dir);
 
 #endif
