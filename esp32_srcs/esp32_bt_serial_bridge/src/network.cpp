@@ -47,12 +47,12 @@ void parsePacket(AsyncUDPPacket packet) {
     if ((p2_flag == true) && (p2_flag == true)) {
         if (packet.remoteIP() == p1.ip) {
             //Serial.println(packet.length());
-            message = "1," + packet.readString();
+            sendMessage(P1, packet.readString());
             // @TODO: Send message over serial to rvfpga
         } 
         else if (packet.remoteIP() == p2.ip) {
             //Serial.println(packet.length());
-            message = "2," + packet.readString();
+            sendMessage(P2, packet.readString());
             // @TODO: Send message over serial to rvfpga
         }
     }
@@ -61,7 +61,7 @@ void parsePacket(AsyncUDPPacket packet) {
 
 
 void udpListener() {
-    if (udp.listen(UDP_PORT)) {
+    if (udp.listen(UDP_RX_PORT)) {
         udp.onPacket([](AsyncUDPPacket packet) {
             packet.setTimeout(0);
             parsePacket(packet);
@@ -72,9 +72,35 @@ void udpListener() {
 // Send Packet to devices
 void sendName() {
     AsyncUDPMessage message;
-    message.println(p1.name);
-    udp.sendTo(message, p2.ip, UDP_PORT);
-    message.flush();
-    message.println(p2.name);
-    udp.sendTo(message, p1.ip, UDP_PORT);
+    message.printf("%s,%s,%s,%s", CONTROLLER, INIT, p1.name.c_str(), p2.name.c_str());
+    udp.sendTo(message, p2.ip, UDP_TX_PORT);
+    udp.sendTo(message, p1.ip, UDP_TX_PORT);
+}
+
+void broadcastMessage(String receivedMessage) {
+    AsyncUDPMessage message;
+    message.println(receivedMessage);
+    udp.sendTo(message, p2.ip, UDP_TX_PORT);
+    udp.sendTo(message, p1.ip, UDP_TX_PORT);
+}
+
+
+/**
+ * 
+ * Messages Received
+ * PLAYER,P1/P2,COMMAND,UP/DOWN
+ */
+void sendMessage (int player, String packet) {
+    String messageString;
+    switch (player)
+    {
+        case P1: 
+            messageString = PLAYER + P1 + String(COMMAND) + packet;
+            Serial.println(messageString);
+            break;
+        case P2:
+            messageString = PLAYER + P2 + String(COMMAND) + packet;
+            Serial.println(messageString);
+            break;
+    }
 }
