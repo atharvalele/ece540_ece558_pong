@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PongController</string>
+    <string name="pong">PONG</string>
+    <string name="getName">Enter your name</string>
+    <string name="letsGo">Let\'s Go!</string>
+    <string name="player1">Player 1</string>
+    <string name="player2">Player 2</string>
+    <string name="score">Score</string>
+    <string name="waitText">Waiting for server..</string>
+    <string name="gameOver">Game Over!</string>
+</resources>
