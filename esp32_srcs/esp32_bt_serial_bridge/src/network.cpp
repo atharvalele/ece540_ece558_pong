@@ -29,9 +29,9 @@ void parsePacket(AsyncUDPPacket packet) {
 
     if ((p1_flag == false) && (p2_flag == false)) {
         p1.ip = packet.remoteIP();
-        p2.name = packet.readString();
+        p1.name = packet.readString();
         p1_flag = true;
-        //Serial.println(p1.ip);
+        Serial.println(p1.name);
         return;
     }
 
@@ -39,8 +39,8 @@ void parsePacket(AsyncUDPPacket packet) {
         p2.ip = packet.remoteIP();
         p2.name = packet.readString();   
         p2_flag = true;
+        Serial.println(p2.name);
         sendName();
-        //Serial.println(p2.ip);
         return;
     }
 
@@ -72,6 +72,7 @@ void udpListener() {
 // Send Packet to devices
 void sendName() {
     AsyncUDPMessage message;
+    //Serial.println("Sending Names back");
     message.printf("%s,%s,%s,%s", CONTROLLER, INIT, p1.name.c_str(), p2.name.c_str());
     udp.sendTo(message, p2.ip, UDP_TX_PORT);
     udp.sendTo(message, p1.ip, UDP_TX_PORT);
