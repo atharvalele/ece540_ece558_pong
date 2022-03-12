@@ -32,7 +32,7 @@
 #define BALL_LOWER_BOUND      (DISPLAY_HEIGHT - (BALL_RADIUS / 2))
 
 #define P0_SCORE_X_POS        10
-#define P1_SCORE_X_POS        (DISPLAY_WIDTH - P0_SCORE_X_POS - 10)
+#define P1_SCORE_X_POS        (DISPLAY_WIDTH - P0_SCORE_X_POS - 20)
 #define P_SCORE_Y_POS         10
 
 #define MAX_SCORE             10
@@ -41,12 +41,13 @@
 // Game states 
 typedef enum {
     PONG_INIT,
-    PONG_WAIT_FOR_USER1,
-    PONG_WAIT_FOR_USER2,
+    PONG_WAIT_FOR_USERS,
     PONG_WAIT_FOR_START,
     PONG_GAME_IN_PROGRESS,
     PONG_ROUND_OVER,
+    PONG_ROUND_OVER_WAIT,
     PONG_GAME_OVER,
+    PONG_GAME_OVER_WAIT,
     PONG_LAST = 100
 } pong_states_t;
 
@@ -64,6 +65,7 @@ extern u08_t pong_started;
 /* Functions */
 void pong_init(void);
 void pong_task(void);
-void pong_paddle_move(u08_t paddle, u08_t dir);
+void pong_set_state(pong_states_t state);
+void paddle_move(u08_t paddle, u08_t dir);
 
 #endif

@@ -62,10 +62,8 @@ void send_message(pong_states_t state, u08_t p1_score, u08_t p2_score)
     {
         case PONG_INIT:
             break;
-        case PONG_WAIT_FOR_USER1:
-            break;
-        case PONG_WAIT_FOR_USER2:
-            break;
+        case PONG_WAIT_FOR_USERS:
+        break;
         case PONG_WAIT_FOR_START:
             break;
         case PONG_GAME_IN_PROGRESS:

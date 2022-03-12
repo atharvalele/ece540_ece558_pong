@@ -8,7 +8,10 @@
 #include <hagl.h>
 
 #include "device/timer.h"
+#include "device/uart.h"
 #include "font10x20-ISO8859-15.h"
+
+#include "utils/printf.h"
 
 /* Global variables */
 volatile u08_t pong_render = 0;
@@ -23,6 +26,8 @@ static s08_t player_that_scored;
 static s08_t winner;
 
 static pong_states_t pong_state = PONG_INIT;
+
+static char message[10];
 
 /* Static Functions */
 
@@ -71,30 +76,6 @@ static void ball_draw(u08_t color)
                         color);
 }
 
-// Move paddle
-static void paddle_move(u08_t paddle, u08_t dir)
-{
-    s16_t pos;
-
-    // Move paddle by offset, make sure that it doesn't
-    // go outside the screen
-    if (dir == PADDLE_UP)
-        pos = paddle_pos[paddle].y - PADDLE_MOVE_OFFSET;
-    else
-        pos = paddle_pos[paddle].y + PADDLE_MOVE_OFFSET;
-
-    if (pos > DISPLAY_HEIGHT)
-        pos = PADDLE_LOWER_BOUND;
-    else if (pos < 0)
-        pos = PADDLE_UPPER_BOUND;
-
-    /* Update only if position is changed */
-    if (pos != paddle_pos[paddle].y) {
-        paddle_draw(paddle, 0);
-        paddle_pos[paddle].y = pos;
-        paddle_draw(paddle, 0xF);
-    }
-}
 
 // Move ball
 static void ball_move()
@@ -152,8 +133,15 @@ static void ball_check_boundary_hit(void)
 // Update scores
 static void pong_update_scores(void)
 {
-    // Placeholder
-    // Add player score update functions here
+    wchar_t score[3];
+
+    score[0] = player_scores[0] / 10 + '0';
+    score[1] = player_scores[0] % 10 + '0';
+    hagl_put_text(score, P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+
+    score[0] = player_scores[1] / 10 + '0';
+    score[1] = player_scores[1] % 10 + '0';
+    hagl_put_text(score, P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
 }
 
 static void pong_init_animation(void)
@@ -161,8 +149,6 @@ static void pong_init_animation(void)
     u08_t exit_flag = 0;
 
     hagl_clear_screen();
-
-    pong_update_scores();
 
     /* Draw initial positions of paddles & ball */
     paddle_draw(0, 0xF);
@@ -196,6 +182,30 @@ static void pong_init_animation(void)
 }
 
 /* Functions */
+// Move paddle
+void paddle_move(u08_t paddle, u08_t dir)
+{
+    s16_t pos;
+
+    // Move paddle by offset, make sure that it doesn't
+    // go outside the screen
+    if (dir == PADDLE_UP)
+        pos = paddle_pos[paddle].y - PADDLE_MOVE_OFFSET;
+    else
+        pos = paddle_pos[paddle].y + PADDLE_MOVE_OFFSET;
+
+    if (pos > DISPLAY_HEIGHT)
+        pos = PADDLE_LOWER_BOUND;
+    else if (pos < 0)
+        pos = PADDLE_UPPER_BOUND;
+
+    /* Update only if position is changed */
+    if (pos != paddle_pos[paddle].y) {
+        paddle_draw(paddle, 0);
+        paddle_pos[paddle].y = pos;
+        paddle_draw(paddle, 0xF);
+    }
+}
 
 // Init function
 void pong_init(void)
@@ -210,6 +220,7 @@ void pong_init(void)
     // Reset scores
     player_scores[0] = 0;
     player_scores[1] = 0;
+    pong_update_scores();
 }
 
 // Game task
@@ -220,13 +231,10 @@ void pong_task(void)
     switch (pong_state) {
     case PONG_INIT:
         pong_init();
-        pong_state = PONG_WAIT_FOR_USER1;
+        pong_state = PONG_WAIT_FOR_USERS;
     break;
 
-    case PONG_WAIT_FOR_USER1:
-    break;
-
-    case PONG_WAIT_FOR_USER2:
+    case PONG_WAIT_FOR_USERS:
     break;
 
     case PONG_WAIT_FOR_START:
@@ -277,14 +285,39 @@ void pong_task(void)
         } else if (player_scores[1] == 10) {
             winner = 1;
             pong_state = PONG_GAME_OVER;
+        } else {
+            // Update game score on screen
+            pong_update_scores();
+            sprintf(message, "R,%d,%d", player_scores[0], player_scores[1]);
+            uart_str_send(message);
+
+            // Go to round over wait
+            pong_state = PONG_ROUND_OVER_WAIT;
         }
     break;
 
+    case PONG_ROUND_OVER_WAIT:
+        // Wait here until pushed into GAME IN PROGRESS state by comm_task()
+    break;
+
     case PONG_GAME_OVER:
+        // Send over UART
+        sprintf(message, "G,O,%d", winner);
+        uart_str_send(message);
+    break;
+
+    case PONG_GAME_OVER_WAIT:
+        // Wait here until pushed into next state by comm_task()
     break;
 
     default:
 
     break;
     }
+}
+
+// Update state
+void pong_set_state(pong_states_t state)
+{
+    pong_state = state;
 }
