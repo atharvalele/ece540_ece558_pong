@@ -15,7 +15,6 @@ int main()
     while (1) {
         /* Game Task */
         pong_task();
-        
         /* This block will be triggered per second */
         if (secflag) {
             secflag = 0;

@@ -26,6 +26,11 @@
 #define PADDLE_WIDTH          10
 #define BALL_RADIUS           3
 
+#define BALL_LEFT_BOUND       ((PADDLE_0_X_POS + PADDLE_WIDTH / 2) + BALL_RADIUS + 2)
+#define BALL_RIGHT_BOUND      ((PADDLE_1_X_POS - PADDLE_WIDTH / 2) - BALL_RADIUS - 2)
+#define BALL_UPPER_BOUND      (BALL_RADIUS / 2)
+#define BALL_LOWER_BOUND      (DISPLAY_HEIGHT - (BALL_RADIUS / 2))
+
 #define MAX_SCORE             10
 
 /* Structs & typedefs */
@@ -48,6 +53,8 @@ typedef struct {
 } vect_2d;
 
 /* Variables */
+extern volatile u08_t pong_render;
+extern u08_t pong_started;
 
 
 /* Functions */

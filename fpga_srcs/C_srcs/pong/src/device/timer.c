@@ -9,6 +9,8 @@
 #include "psp_api.h"
 #include "bsp_external_interrupts.h"
 
+#include "game/pong.h"
+
 /* Global vars */
 volatile u08_t secflag = 0;
 
@@ -49,6 +51,11 @@ void timer_isr(void)
 
     msec++; 
     delay_cnt++;
+
+    /* Increment game time */
+    if (pong_started)
+        if (msec % 5 == 0)
+            pong_render = 1;
     
     if (msec >= 1000) {
         msec = 0;

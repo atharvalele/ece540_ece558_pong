@@ -9,9 +9,17 @@
 
 #include "device/timer.h"
 
+/* Global variables */
+volatile u08_t pong_render = 0;
+u08_t pong_started = 0;
+
 /* Static Variables */
 static vect_2d paddle_pos[2];
 static vect_2d ball_pos, ball_speed;
+
+static u08_t player_scores[2];
+static s08_t player_that_scored;
+static s08_t winner;
 
 static pong_states_t pong_state = PONG_INIT;
 
@@ -87,6 +95,59 @@ static void paddle_move(u08_t paddle, u08_t dir)
     }
 }
 
+// Move ball
+static void ball_move()
+{
+    // Clear ball
+    ball_draw(0);
+
+    // Update position
+    ball_pos.x += ball_speed.x;
+    ball_pos.y += ball_speed.y / 2;
+
+    // Redraw
+    ball_draw(0xF);
+}
+
+// Check if ball hit any paddle
+static u08_t ball_check_paddle_hit(void)
+{
+    u08_t ball_went_out = 0;
+
+    if (ball_pos.x < BALL_LEFT_BOUND) {
+        if ((ball_pos.y >= (paddle_pos[0].y - (PADDLE_HEIGHT / 2))) &&
+            (ball_pos.y <= (paddle_pos[0].y + (PADDLE_HEIGHT / 2)))) {
+                ball_speed.x = -ball_speed.x;
+                ball_speed.y = (ball_pos.y - paddle_pos[0].y) % 3;
+        } else {
+            ball_went_out = 1;
+            player_that_scored = 1;
+        }
+        
+    } else if (ball_pos.x > BALL_RIGHT_BOUND) {
+        if ((ball_pos.y >= (paddle_pos[1].y - (PADDLE_HEIGHT / 2))) &&
+            (ball_pos.y <= (paddle_pos[1].y + (PADDLE_HEIGHT / 2)))) {
+                ball_speed.x = -ball_speed.x;
+                ball_speed.y = (ball_pos.y - paddle_pos[1].y) % 3;
+        } else {
+            ball_went_out = 1;
+            player_that_scored = 0;
+        }
+    }
+
+    return ball_went_out;
+}
+
+// Check if ball hits screen boundary
+static void ball_check_boundary_hit(void)
+{
+    if ((ball_pos.x > BALL_LEFT_BOUND) && (ball_pos.x < BALL_RIGHT_BOUND) &&
+        ((ball_pos.y < BALL_UPPER_BOUND) || (ball_pos.y > BALL_LOWER_BOUND))) {
+            // Reverse Y-axis direction
+            ball_speed.y = -ball_speed.y;
+    }
+}
+
 static void pong_init_animation(void)
 {
     u08_t exit_flag = 0;
@@ -135,15 +196,81 @@ void pong_init(void)
 
     // Show init animation
     pong_init_animation();
+
+    // Reset scores
+    player_scores[0] = 0;
+    player_scores[1] = 0;
 }
 
 // Game task
 void pong_task(void)
 {
+    u08_t ball_went_out = 0;
+
     switch (pong_state) {
     case PONG_INIT:
         pong_init();
         pong_state = PONG_WAIT_FOR_USER1;
+    break;
+
+    case PONG_WAIT_FOR_USER1:
+    break;
+
+    case PONG_WAIT_FOR_USER2:
+    break;
+
+    case PONG_WAIT_FOR_START:
+    break;
+
+    case PONG_GAME_IN_PROGRESS:
+        if (pong_render) {
+            pong_render = 0;
+            
+            // Move the ball
+            ball_move();
+
+            // Check if it hit the paddles
+            ball_went_out = ball_check_paddle_hit();
+
+            // If ball went out of bounds, round is over
+            if (!ball_went_out) {
+                ball_check_boundary_hit();
+            } else {
+                // Erase paddles & Ball
+                paddle_draw(0, 0);
+                paddle_draw(1, 0);
+                ball_draw(0);
+
+                // Reset positions
+                paddles_reset();
+                ball_reset();
+
+                // Redraw
+                paddle_draw(0, 0xF);
+                paddle_draw(1, 0xF);
+                ball_draw(0xF);
+
+                // Move on to next state
+                pong_state = PONG_ROUND_OVER;
+            }
+        }
+    break;
+
+    case PONG_ROUND_OVER:
+        // Increment scores
+        player_scores[player_that_scored]++;
+
+        // Check if game over
+        if (player_scores[0] == 10) {
+            winner = 0;
+            pong_state = PONG_GAME_OVER;
+        } else if (player_scores[1] == 10) {
+            winner = 1;
+            pong_state = PONG_GAME_OVER;
+        }
+    break;
+
+    case PONG_GAME_OVER:
     break;
 
     default:
