@@ -8,6 +8,7 @@
 #include <hagl.h>
 
 #include "device/timer.h"
+#include "font10x20-ISO8859-15.h"
 
 /* Global variables */
 volatile u08_t pong_render = 0;
@@ -148,11 +149,20 @@ static void ball_check_boundary_hit(void)
     }
 }
 
+// Update scores
+static void pong_update_scores(void)
+{
+    // Placeholder
+    // Add player score update functions here
+}
+
 static void pong_init_animation(void)
 {
     u08_t exit_flag = 0;
 
     hagl_clear_screen();
+
+    pong_update_scores();
 
     /* Draw initial positions of paddles & ball */
     paddle_draw(0, 0xF);

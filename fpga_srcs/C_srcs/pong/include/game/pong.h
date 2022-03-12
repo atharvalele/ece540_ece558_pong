@@ -31,6 +31,10 @@
 #define BALL_UPPER_BOUND      (BALL_RADIUS / 2)
 #define BALL_LOWER_BOUND      (DISPLAY_HEIGHT - (BALL_RADIUS / 2))
 
+#define P0_SCORE_X_POS        10
+#define P1_SCORE_X_POS        (DISPLAY_WIDTH - P0_SCORE_X_POS - 10)
+#define P_SCORE_Y_POS         10
+
 #define MAX_SCORE             10
 
 /* Structs & typedefs */
