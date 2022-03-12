@@ -15,7 +15,7 @@ void hagl_hal_clear_screen(void)
 
 void hagl_hal_put_pixel(int16_t x0, int16_t y0, color_t color)
 {
-    draw_pixel(x0, y0, 0xF);
+    draw_pixel(x0, y0, color);
 }
 
 void hagl_hal_hline(int16_t x0, int16_t y0, uint16_t width, color_t color)
