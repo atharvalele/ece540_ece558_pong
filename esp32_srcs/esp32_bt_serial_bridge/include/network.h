@@ -3,7 +3,7 @@
 
 /**
  * upd: upd functionality wrapper
- * 
+ *
  * Author: Ayush Srivastava <ayush@pdx.edu>
  */
 
@@ -11,30 +11,38 @@
 #include <WiFi.h>
 #include <AsyncUDP.h>
 
-#define UDP_TX_PORT         2001
-#define UDP_RX_PORT         2000
+#define UDP_TX_PORT 2001
+#define UDP_RX_PORT 2000
 
-// Packet Structure 
-// Origin, Init, PlayerName1, PlayerName 2
-// Origin, Score, Score 1, Score 2
-// Player, PlayerID, Command, UP/DOWN
-
-
-#define CONTROLLER          "NEXYS"
-#define INIT                "INIT"
-#define COMMAND             "COMMAND,"
-#define PLAYER              "PLAYER,"
-#define SCORE               "SCORE"
-#define P1                  1
-#define P2                  2
-
-// Message Construction Switches
-#define INIT_SWITCH         0
-#define BROADCAST_SWITCH    1
-#define PLAYER_SWITCH       2
+/**
+ * Packet Strucrure 
+ * Game Start G,1
+ * Round Start R,1
+ * Player Commands P,0/1,0/1
+ */
 
 
-struct player_t {
+// Nexys Packets
+#define GAME_START   "G"
+#define ROUND_START  "R"
+#define BROADCAST    "B"
+
+// ESP UDP Message Packets
+#define SERVER_READY "S"
+#define P1           0
+#define P2           1
+
+// Messages to NEXYS
+#define PLAYER "P"
+
+// Deprecated Packet Structure 
+#define INIT "1"
+#define COMMAND "COMMAND,"
+
+#define SCORE "SCORE"
+
+struct player_t
+{
     IPAddress ip;
     String name;
 };
@@ -42,7 +50,10 @@ struct player_t {
 void setupWiFi();
 void udpListener();
 void parsePacket(AsyncUDPPacket packet);
+void sendPlayerConnected();
+void sendGameStart();
+void sendRoundStart();
 void sendName();
-void sendMessage (int player, String packet);
+void sendMessagePong(int player, String packet);
 void broadcastMessage(String receivedMessage);
 #endif

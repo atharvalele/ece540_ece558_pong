@@ -4,6 +4,7 @@
 void setup()
 {
   Serial.begin(115200);
+  Serial1.begin(115200);
   Serial.println("Hello");
   setupWiFi();
   udpListener(); 
@@ -11,7 +12,9 @@ void setup()
 
 void loop()
 {
-    delay(1000);
-    //Send broadcast
-    //Serial.println(WiFi.softAPgetStationNum());
+  delay(5);
+  //Send broadcast
+  //Serial.println(WiFi.softAPgetStationNum());
+  if(Serial1.available())
+    broadcastMessage(Serial1.readString());  
 }
