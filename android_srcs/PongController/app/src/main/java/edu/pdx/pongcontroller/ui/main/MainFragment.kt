@@ -50,9 +50,8 @@ class MainFragment : Fragment() {
                     MainFragmentDirections.actionMainFragmentToWaitFragment()
                 action.setTempName(playerName)
 
-                (activity as MainActivity).sendUDPMessage("HELLO")
 
-                // Navigate to the next fragment
+                // Navigate to the next fragment\
                 Navigation.findNavController(it).navigate(action)
             } else {
                 Toast.makeText(activity, "Name cannot be empty", Toast.LENGTH_LONG).show()
@@ -64,4 +63,5 @@ class MainFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

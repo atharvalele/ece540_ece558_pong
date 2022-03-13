@@ -3,11 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/game_fragment.xml" value="0.3567708333333333" />
-        <entry key="app/src/main/res/layout/game_over_fragment.xml" value="0.3567708333333333" />
-        <entry key="app/src/main/res/layout/main_activity.xml" value="0.3567708333333333" />
-        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.3411458333333333" />
-        <entry key="app/src/main/res/layout/wait_fragment.xml" value="0.3567708333333333" />
+        <entry key="app/src/main/res/layout/game_over_fragment.xml" value="0.3098958333333333" />
       </map>
     </option>
   </component>

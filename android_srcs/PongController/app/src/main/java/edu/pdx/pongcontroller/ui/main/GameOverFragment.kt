@@ -31,6 +31,10 @@ class GameOverFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        arguments?.let {
+            val args = GameOverFragmentArgs.fromBundle(it)
+            binding.winnerText.text = "${args.winnerName}  won!"
+        }
         viewModel = ViewModelProvider(this).get(GameOverViewModel::class.java)
         // TODO: Use the ViewModel
     }
@@ -39,4 +43,5 @@ class GameOverFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

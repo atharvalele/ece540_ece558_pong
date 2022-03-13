@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
+import edu.pdx.pongcontroller.MainActivity
 import edu.pdx.pongcontroller.R
 import edu.pdx.pongcontroller.databinding.MainFragmentBinding
 import edu.pdx.pongcontroller.databinding.WaitFragmentBinding
@@ -51,5 +54,21 @@ class WaitFragment : Fragment() {
             playerName = args.tempName
             Log.d("WAIT", "Got player name $playerName")
         }
+
+        (activity as MainActivity).sendUDPMessage(playerName)
+    }
+
+    fun navigateToGame() {
+        /*val action: MainFragmentDirections.ActionMainFragmentToWaitFragment =
+            MainFragmentDirections.actionMainFragmentToWaitFragment()
+        action.setTempName(playerName)
+
+        (activity as MainActivity).sendUDPMessage(playerName)
+
+        // Navigate to the next fragment
+        Navigation.findNavController(it).navigate(action)*/
+
+        val action = WaitFragmentDirections.actionWaitFragmentToGameFragment()
+        Navigation.findNavController(binding.root).navigate(action)
     }
 }
