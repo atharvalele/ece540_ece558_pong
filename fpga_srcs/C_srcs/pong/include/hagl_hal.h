@@ -4,6 +4,9 @@
 /**
  * HAGL library HAL provider
  * 
+ * Provide basic drawing functions to
+ * the drawing library
+ * 
  * Author: Atharva Lele <atharva@pdx.edu>
  */
 

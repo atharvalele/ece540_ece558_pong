@@ -1,17 +1,15 @@
 /**
  * Pong Game Parse logic for commands on Serial
  * 
- * Author Ayush Srivastava (you@domain.com)
+ * Author: Ayush Srivastava <ayush@pdx.edu>, Atharva Lele <atharva@pdx.edu>
  */
 #include "utils/game_parse.h"
 
- //  rx_index rx_flag & rx_tout
 static char message[UART_BUF_SIZE];
 
 static u08_t player, command;
+
 /* Message Packet 
- * @TODO Replace P1 and P2 on the esp side code
- *       Make a decisin on UP and Down Preferrably 0/1
  * G,1
  * R,1
  * P,0,0/1
@@ -20,6 +18,8 @@ static u08_t player, command;
 void comm_task(void)
 {
     int i = 0;
+
+    // If data received && Receive timeout over && packet length >= 3
     if (rx_flag && !rx_tout && (rx_index >= 3)) {
         // Copy data into buffer
         sw_fifo_read(&uart_rx_fifo, message, rx_index);

@@ -1,9 +1,11 @@
 #ifndef __GAME_PARSE_H__
 #define __GAME_PARSE_H__
 /**
- * Author : Ayush Srivastava <ayush@pdx.edu>
  * Parse Logic of commands of the game
+ * 
+ * Author: Ayush Srivastava <ayush@pdx.edu>, Atharva Lele <atharva@pdx.edu>
  */
+
 #include <hagl.h>
 #include <string.h>
 #include "psp_types.h"

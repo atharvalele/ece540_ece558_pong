@@ -16,7 +16,10 @@ int main()
     while (1) {
         /* Game Task */
         pong_task();
+
+        /* Communication Task */
         comm_task();
+        
         /* This block will be triggered per second */
         if (secflag) {
             secflag = 0;

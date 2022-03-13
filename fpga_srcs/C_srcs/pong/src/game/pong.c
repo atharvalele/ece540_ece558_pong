@@ -96,12 +96,15 @@ static u08_t ball_check_paddle_hit(void)
 {
     u08_t ball_went_out = 0;
 
+    // Check if the ball hit either paddle
     if (ball_pos.x < BALL_LEFT_BOUND) {
         if ((ball_pos.y >= (paddle_pos[0].y - (PADDLE_HEIGHT / 2))) &&
             (ball_pos.y <= (paddle_pos[0].y + (PADDLE_HEIGHT / 2)))) {
                 ball_speed.x = -ball_speed.x;
                 ball_speed.y = (ball_pos.y - paddle_pos[0].y) % 3;
         } else {
+            // Ball didn't hit, went out of bounds,
+            // player 1 scores
             ball_went_out = 1;
             player_that_scored = 1;
         }
@@ -112,6 +115,8 @@ static u08_t ball_check_paddle_hit(void)
                 ball_speed.x = -ball_speed.x;
                 ball_speed.y = (ball_pos.y - paddle_pos[1].y) % 3;
         } else {
+            // Ball didn't hit, went out of bounds,
+            // player 0 scores
             ball_went_out = 1;
             player_that_scored = 0;
         }
@@ -146,7 +151,6 @@ static void pong_init_animation(void)
     /* Draw initial positions of paddles & ball */
     paddle_draw(0, 0xF);
     paddle_draw(1, 0xF);
-
     ball_draw(0xF);
 
     /* Animate paddle up and down */
@@ -173,7 +177,6 @@ static void pong_init_animation(void)
                 break;
             }
         }
-
         delay_ms(30);
     }
 }
@@ -200,6 +203,7 @@ static void reinit_paddles_ball(void)
 static void pong_display_game_over(void)
 {
     wchar_t game_over[] = L"GAME OVER!";
+
     // Clear screen
     hagl_clear_screen();
 
@@ -252,6 +256,7 @@ void pong_init(void)
     player_scores[1] = 0;
     winner = -1;
     
+    // Start displaying scores on screen
     pong_update_scores();
 }
 
@@ -259,6 +264,8 @@ void pong_init(void)
 void pong_task(void)
 {
     u08_t ball_went_out = 0;
+
+    // Pong state machine
 
     switch (pong_state) {
     case PONG_INIT:
@@ -275,6 +282,9 @@ void pong_task(void)
     break;
 
     case PONG_GAME_START:
+        // Throw the ball in the direction of the 
+        // player that won the last round
+        // throw to the left if initial round
         if (player_that_scored == 1) {
             ball_speed.x = 1;
         } else {
@@ -282,6 +292,7 @@ void pong_task(void)
         }
         ball_speed.y = 0;
 
+        // Signal start of game
         pong_started = 1;
         pong_state = PONG_GAME_IN_PROGRESS;
     break;

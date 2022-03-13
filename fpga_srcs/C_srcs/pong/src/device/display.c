@@ -1,5 +1,7 @@
 /**
- * display: ability to draw one pixel on the screen
+ * display: functions to draw supported drawing constructs
+ * 
+ * Pixel, Horizontal Line, Vertical Line supported
  * 
  * Authors: Ayush Srivastava <ayush@pdx.edu>, Atharva Lele <atharva@pdx.edu>
  */

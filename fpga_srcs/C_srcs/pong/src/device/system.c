@@ -1,6 +1,9 @@
 /**
  * system: interrupts and other system configuration for RVfpga
  * 
+ * Interrupt initialization code reference taken from WD's example
+ * code repository
+ * 
  * Author: Atharva Lele <atharva@pdx.edu>
  */
 

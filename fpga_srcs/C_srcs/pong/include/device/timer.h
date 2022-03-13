@@ -13,10 +13,10 @@
 /* PTC Register Addresses */
 #define PTC_BASE_ADDR           0x80001200
 
-#define PTC_CNTR_OFFSET         0x00
-#define PTC_HRC_OFFSET          0x01
-#define PTC_LRC_OFFSET          0x02
-#define PTC_CNTRL_OFFSET        0x03
+#define PTC_CNTR_OFFSET         0x00        // Main timer counter
+#define PTC_HRC_OFFSET          0x01        // Timer High Compare location
+#define PTC_LRC_OFFSET          0x02        // Timer Low compare location
+#define PTC_CNTRL_OFFSET        0x03        // Timer Control Register
 
 #define PTC_CNTRL_EN_BIT        0x01
 #define PTC_CNTRL_OE_BIT        0x08

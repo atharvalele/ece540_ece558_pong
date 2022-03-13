@@ -17,11 +17,6 @@ volatile u08_t secflag = 0;
 volatile u16_t msec = 0;
 volatile u16_t delay_cnt = 0;
 
-#define RPTC_CNTR       0x80001200
-#define RPTC_HRC        0x80001204
-#define RPTC_LRC        0x80001208
-#define RPTC_CTRL       0x8000120c
-
 void timer_init(void)
 {
     /* Load timer value: Clocked @ 50MHz --> 50k count for 1ms tick */
@@ -49,10 +44,11 @@ void timer_isr(void)
     /* UART Timeout */
     uart_timeout();
 
+    /* Count ticks */
     msec++; 
     delay_cnt++;
 
-    /* Increment game time */
+    /* Render game every GAME_RENDER_MS milliseconds */
     if (pong_started)
         if (msec % GAME_RENDER_MS == 0)
             pong_render = 1;
