@@ -133,9 +133,8 @@ static void ball_check_boundary_hit(void)
 // Update scores
 static void pong_update_scores(void)
 {
-    u08_t ret;
-    ret = hagl_put_char(player_scores[0] + '0', P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
-    ret = hagl_put_char(player_scores[1] + '0', P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+    hagl_put_char(player_scores[0] + '0', P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+    hagl_put_char(player_scores[1] + '0', P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
 }
 
 static void pong_init_animation(void)
@@ -177,6 +176,39 @@ static void pong_init_animation(void)
 
         delay_ms(30);
     }
+}
+
+/* Reset paddles, ball, and redraw them */
+static void reinit_paddles_ball(void)
+{
+    // Erase paddles & Ball
+    paddle_draw(0, 0);
+    paddle_draw(1, 0);
+    ball_draw(0);
+
+    // Reset positions
+    paddles_reset();
+    ball_reset();
+
+    // Redraw
+    paddle_draw(0, 0xF);
+    paddle_draw(1, 0xF);
+    ball_draw(0xF);
+}
+
+/* Game over screen */
+static void pong_display_game_over(void)
+{
+    wchar_t game_over[] = L"GAME OVER!";
+    // Clear screen
+    hagl_clear_screen();
+
+    // Draw rectangle
+    hagl_draw_rounded_rectangle(20, 20, DISPLAY_WIDTH - 20, DISPLAY_HEIGHT - 20, 10, 0xF);
+
+    // Write Game over text
+    hagl_put_text(game_over, (DISPLAY_WIDTH / 2) - 50, (DISPLAY_HEIGHT / 2) - 100,
+                  0xF, font10x20_ISO8859_15);
 }
 
 /* Functions */
@@ -268,20 +300,8 @@ void pong_task(void)
             if (!ball_went_out) {
                 ball_check_boundary_hit();
             } else {
-                // Erase paddles & Ball
-                paddle_draw(0, 0);
-                paddle_draw(1, 0);
-                ball_draw(0);
-
-                // Reset positions
-                paddles_reset();
-                ball_reset();
-
-                // Redraw
-                paddle_draw(0, 0xF);
-                paddle_draw(1, 0xF);
-                ball_draw(0xF);
-
+                // Reset all game objects
+                reinit_paddles_ball();
                 // Move on to next state
                 pong_state = PONG_ROUND_OVER;
             }
@@ -293,10 +313,10 @@ void pong_task(void)
         player_scores[player_that_scored]++;
 
         // Check if game over
-        if (player_scores[0] == 10) {
+        if (player_scores[0] == MAX_SCORE) {
             winner = 0;
             pong_state = PONG_GAME_OVER;
-        } else if (player_scores[1] == 10) {
+        } else if (player_scores[1] == MAX_SCORE) {
             winner = 1;
             pong_state = PONG_GAME_OVER;
         } else {
@@ -319,11 +339,26 @@ void pong_task(void)
         // Send over UART
         sprintf(message, "G,O,%d", winner);
         uart_str_send(message);
+        
+        // Display game over
+        pong_display_game_over();
+
+        // Reset game objects
+        reinit_paddles_ball();
+
+        // Give the ball a speed
+        ball_speed.x = 1;
+
         pong_state = PONG_GAME_OVER_WAIT;
     break;
 
     case PONG_GAME_OVER_WAIT:
         // Wait here until pushed into next state by comm_task()
+        if (pong_render) {
+            pong_render = 0;
+            ball_move();
+            ball_check_paddle_hit();
+        }
     break;
 
     default:
