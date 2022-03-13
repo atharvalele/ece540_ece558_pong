@@ -7,6 +7,7 @@
 #include "game/pong.h"
 #include <hagl.h>
 
+#include "device/seven_seg.h"
 #include "device/timer.h"
 #include "device/uart.h"
 #include "font10x20-ISO8859-15.h"
@@ -138,13 +139,21 @@ static void ball_check_boundary_hit(void)
 // Update scores
 static void pong_update_scores(void)
 {
+    // Write score to screen
     hagl_put_char(player_scores[0] + '0', P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
     hagl_put_char(player_scores[1] + '0', P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+
+    // Write score to 7-segment display
+    seven_seg_disp_num(player_scores[0], 1);
+    seven_seg_disp_num(player_scores[1], 0);
 }
 
 static void pong_init_animation(void)
 {
     u08_t exit_flag = 0;
+
+    u32_t i = 1;
+    u08_t seven_seg_flag = 0;
 
     hagl_clear_screen();
 
@@ -153,8 +162,26 @@ static void pong_init_animation(void)
     paddle_draw(1, 0xF);
     ball_draw(0xF);
 
+
     /* Animate paddle up and down */
     while (1) {
+        // Animate 7-seg display
+        WRITE_REG(SEVEN_SEG_ADDR, 0, i);
+        WRITE_REG(SEVEN_SEG_ADDR, 1, i);
+        if (!seven_seg_flag) {
+            i <<= 1;
+            i |= 1;
+            if (i >= 0x80000000) {
+                seven_seg_flag = 1;
+            }
+        } else {
+            i >>= 1;
+            if (i == 0) {
+                seven_seg_flag = 0;
+                i = 1;
+            }
+        }
+        
         if (exit_flag == 0) {
             paddle_move(0, PADDLE_UP);
             paddle_move(1, PADDLE_DOWN);
@@ -248,6 +275,9 @@ void pong_init(void)
     paddles_reset();
     ball_reset();
 
+    // Blank out seven seg
+    seven_seg_blank();
+
     // Show init animation
     pong_init_animation();
 
@@ -270,6 +300,8 @@ void pong_task(void)
     switch (pong_state) {
     case PONG_INIT:
         pong_init();
+        // Send Init Done message to ESP
+        uart_str_send("I,D");
         pong_state = PONG_WAIT_FOR_USERS;
     break;
 
