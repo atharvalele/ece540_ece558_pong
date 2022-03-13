@@ -20,26 +20,34 @@ static u08_t player, command;
 void comm_task(void)
 {
     int i = 0;
-    if (rx_flag && !rx_tout) {
+    if (rx_flag && !rx_tout && (rx_index >= 3)) {
         // Copy data into buffer
         sw_fifo_read(&uart_rx_fifo, message, rx_index);
 
         // Parse
-        while (i <= rx_index) {
-            if (message[i] == 'G') {
-                // TODO: State Change Implementation
-                // state = PONG_GAME_START
-                //uart_str_send("GAME_START");
+        while (i < rx_index) {
+            // Game start message
+            if ((message[i] == 'G') && (message[i + 1] == ',') && (message[i + 2] == '1')) {
+                // Start game
+                pong_set_state(PONG_GAME_START);
                 i += 3;
             }
-            else if (message[i] == 'R') {
-                // TODO: State Change Implementation
-                //uart_str_send("ROUND_START");
+            // Round start message
+            else if ((message[i] == 'R') && (message[i + 1] == ',') && (message[i + 2] == 'S')) {
+                // Start round
+                pong_set_state(PONG_GAME_START);
                 i += 3;
             }
+            // Both users connected, start 1st round
+            else if ((message[i] == 'U') && (message[i + 1] == ',') && (message[i + 2] == 'C')) {
+                // Start round
+                pong_set_state(PONG_WAIT_FOR_START);
+                i += 3;
+            }
+            // Paddle control message
             else if (message[i] == 'P') {
-                player = message[2] - '0';
-                command = message[4] - '0';
+                player = message[i + 2] - '0';
+                command = message[i + 4] - '0';
                 paddle_move(player, command);
                 i += 5;
             }
@@ -51,32 +59,5 @@ void comm_task(void)
         // Reset Index and flags
         rx_index = 0;
         rx_flag = 0;
-    }
-}
-
-void send_message(pong_states_t state, u08_t p1_score, u08_t p2_score)
-{
-    char game_status[10] = {0};
-   
-    switch(state) 
-    {
-        case PONG_INIT:
-            break;
-        case PONG_WAIT_FOR_USERS:
-        break;
-        case PONG_WAIT_FOR_START:
-            break;
-        case PONG_GAME_IN_PROGRESS:
-            break;
-        case PONG_LAST:
-            break;
-        case PONG_GAME_OVER:
-            sprintf(game_status, "G,%d", p1_score);
-            uart_str_send(game_status);
-            break;
-        case PONG_ROUND_OVER:
-            sprintf(game_status, "R,%d,%d", p1_score, p2_score);
-            uart_str_send(game_status);
-            break;
     }
 }

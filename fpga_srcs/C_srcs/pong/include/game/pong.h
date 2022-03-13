@@ -14,7 +14,7 @@
 /* Defines */
 #define PADDLE_UP             0
 #define PADDLE_DOWN           1
-#define PADDLE_MOVE_OFFSET    5
+#define PADDLE_MOVE_OFFSET    10
 
 #define PADDLE_0_X_POS        40
 #define PADDLE_1_X_POS        (DISPLAY_WIDTH - PADDLE_0_X_POS)
@@ -37,12 +37,15 @@
 
 #define MAX_SCORE             10
 
+#define GAME_RENDER_MS        3
+
 /* Structs & typedefs */
 // Game states 
 typedef enum {
     PONG_INIT,
     PONG_WAIT_FOR_USERS,
     PONG_WAIT_FOR_START,
+    PONG_GAME_START,
     PONG_GAME_IN_PROGRESS,
     PONG_ROUND_OVER,
     PONG_ROUND_OVER_WAIT,

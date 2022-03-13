@@ -54,7 +54,7 @@ void timer_isr(void)
 
     /* Increment game time */
     if (pong_started)
-        if (msec % 5 == 0)
+        if (msec % GAME_RENDER_MS == 0)
             pong_render = 1;
     
     if (msec >= 1000) {

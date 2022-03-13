@@ -9,7 +9,6 @@
 #include "psp_types.h"
 
 #include "game/pong.h"
-#include "game/pong.h"
 
 #include "device/uart.h"
 #include "device/timer.h"

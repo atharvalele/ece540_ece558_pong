@@ -14,7 +14,7 @@ typedef u16_t color_t;
 
 #define DISPLAY_WIDTH       640
 #define DISPLAY_HEIGHT      480
-#define DISPLAY_DEPTH       100
+#define DISPLAY_DEPTH       4
 
 #define HAGL_HAS_HAL_INIT
 #define HAGL_HAS_HAL_CLEAR_SCREEN

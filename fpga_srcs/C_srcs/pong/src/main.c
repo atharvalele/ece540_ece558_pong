@@ -3,6 +3,7 @@
 #include <hagl.h>
 
 #include "game/pong.h"
+#include "utils/game_parse.h"
 
 int main()
 {
@@ -15,6 +16,7 @@ int main()
     while (1) {
         /* Game Task */
         pong_task();
+        comm_task();
         /* This block will be triggered per second */
         if (secflag) {
             secflag = 0;

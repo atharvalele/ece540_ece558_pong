@@ -46,6 +46,9 @@ void uart_init(u32_t baudrate)
 
 void uart_interrupt_enable(void)
 {
+    /* Set timeout */
+    rx_tout = UART_RX_TOUT;
+    
     /* Enable Receiver Data Available interrupt */
     WRITE_REG(UART_BASE_ADDR, UART_IER_OFFSET, (UART_IE_RDA_BIT));
 }

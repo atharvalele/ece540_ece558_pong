@@ -133,15 +133,9 @@ static void ball_check_boundary_hit(void)
 // Update scores
 static void pong_update_scores(void)
 {
-    wchar_t score[3];
-
-    score[0] = player_scores[0] / 10 + '0';
-    score[1] = player_scores[0] % 10 + '0';
-    hagl_put_text(score, P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
-
-    score[0] = player_scores[1] / 10 + '0';
-    score[1] = player_scores[1] % 10 + '0';
-    hagl_put_text(score, P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+    u08_t ret;
+    ret = hagl_put_char(player_scores[0] + '0', P0_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
+    ret = hagl_put_char(player_scores[1] + '0', P1_SCORE_X_POS, P_SCORE_Y_POS, 0xF, font10x20_ISO8859_15);
 }
 
 static void pong_init_animation(void)
@@ -161,18 +155,22 @@ static void pong_init_animation(void)
         if (exit_flag == 0) {
             paddle_move(0, PADDLE_UP);
             paddle_move(1, PADDLE_DOWN);
-            if (paddle_pos[0].y == PADDLE_UPPER_BOUND)
+            if (paddle_pos[0].y <= PADDLE_UPPER_BOUND)
                 exit_flag++;
         } else if (exit_flag == 1) {
             paddle_move(0, PADDLE_DOWN);
             paddle_move(1, PADDLE_UP);
-            if (paddle_pos[0].y == PADDLE_LOWER_BOUND)
+            if (paddle_pos[0].y >= PADDLE_LOWER_BOUND)
                 exit_flag++;
         } else {
             paddle_move(0, PADDLE_UP);
             paddle_move(1, PADDLE_DOWN);
-            if (paddle_pos[0].y == (DISPLAY_HEIGHT / 2)) {
+            if (paddle_pos[0].y <= PADDLE_UPPER_BOUND) {
+                paddle_draw(0, 0);
+                paddle_draw(1, 0);
                 paddles_reset();
+                paddle_draw(0, 0xF);
+                paddle_draw(1, 0xF);
                 break;
             }
         }
@@ -220,6 +218,8 @@ void pong_init(void)
     // Reset scores
     player_scores[0] = 0;
     player_scores[1] = 0;
+    winner = -1;
+    
     pong_update_scores();
 }
 
@@ -235,9 +235,23 @@ void pong_task(void)
     break;
 
     case PONG_WAIT_FOR_USERS:
+        // Wait here until pushed to next state
     break;
 
     case PONG_WAIT_FOR_START:
+        // Wait here until pushed to next state
+    break;
+
+    case PONG_GAME_START:
+        if (player_that_scored == 1) {
+            ball_speed.x = 1;
+        } else {
+            ball_speed.x = -1;
+        }
+        ball_speed.y = 0;
+
+        pong_started = 1;
+        pong_state = PONG_GAME_IN_PROGRESS;
     break;
 
     case PONG_GAME_IN_PROGRESS:
@@ -288,7 +302,8 @@ void pong_task(void)
         } else {
             // Update game score on screen
             pong_update_scores();
-            sprintf(message, "R,%d,%d", player_scores[0], player_scores[1]);
+            sprintf(message, "B,%d,%d", player_scores[0], player_scores[1]);
+
             uart_str_send(message);
 
             // Go to round over wait
@@ -304,6 +319,7 @@ void pong_task(void)
         // Send over UART
         sprintf(message, "G,O,%d", winner);
         uart_str_send(message);
+        pong_state = PONG_GAME_OVER_WAIT;
     break;
 
     case PONG_GAME_OVER_WAIT:
@@ -311,7 +327,6 @@ void pong_task(void)
     break;
 
     default:
-
     break;
     }
 }
