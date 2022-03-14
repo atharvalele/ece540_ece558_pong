@@ -15,10 +15,11 @@ static AsyncUDP udp;
 
 static bool p1_flag = false, p2_flag = false;
 
+static bool i_done = false;
 static bool game_on = false;
 static bool round_on = false;
 
-String message;
+String message, messageBuffer;
 
 void setupWiFi() {
     // Setup ESP as WIFI Access Point
@@ -44,11 +45,31 @@ void parsePacket(AsyncUDPPacket packet) {
         p2_flag = true;
         Serial.println(p2.name);
         sendPlayerConnected();
+        delay(500);
         sendName();
         return;
     }
 
     if ((p2_flag == true) && (p2_flag == true)) {
+        messageBuffer = packet.readString();
+        // If received packet is "SO" start over game
+        if (messageBuffer == "SO") {
+            Serial.println("Received Start Over");
+            sendStartOver();
+            return;
+        }
+        // if ((packet.readString().c_str()[0] == 'S') && (packet.readString().c_str()[1] == 'O')) {
+        //     Serial.println("Received Start Over");
+        //     sendStartOver();
+        // }
+
+        // If received packet is RST replay game with same players 
+        //if ((packet.readString().c_str()[0] == 'R') && (packet.readString().c_str()[1] == 'S') && (packet.readString().c_str()[2] == 'T')) { 
+        if (messageBuffer == "RST") {
+            Serial.println("Received Replay");
+            sendReplay();
+            return;
+        }
 
         if (packet.remoteIP() == p1.ip) {
             //Serial.println(packet.length());
@@ -61,7 +82,7 @@ void parsePacket(AsyncUDPPacket packet) {
                 sendRoundStart();
                 round_on = true;
             }
-            sendMessagePong(P1, packet.readString());
+            sendMessagePong(P1, messageBuffer);
             // @TODO: Send message over serial to rvfpga
         } 
         else if (packet.remoteIP() == p2.ip) {
@@ -72,7 +93,7 @@ void parsePacket(AsyncUDPPacket packet) {
                 round_on = true;
             }
 
-            sendMessagePong(P2, packet.readString());
+            sendMessagePong(P2, messageBuffer);
             // @TODO: Send message over serial to rvfpga
         }
     }
@@ -94,6 +115,32 @@ void sendRoundStart() {
     String message = "R,S";
     Serial.println(message);
     Serial1.println(message);
+}
+
+void sendStartOver() {
+    String startOver = "SO,";
+    Serial.println(startOver);
+    Serial1.println(startOver);
+    game_on = false;
+    round_on = false;
+    p2_flag = false;
+    p1_flag = false;
+    AsyncUDPMessage gameAgain;
+    gameAgain.println(startOver);
+    udp.sendTo(gameAgain, p1.ip, UDP_TX_PORT);
+    udp.sendTo(gameAgain, p2.ip, UDP_TX_PORT);
+}
+
+void sendReplay() {
+    String startOver = "RST";
+    Serial.println(startOver);
+    Serial1.println(startOver);
+    game_on = false;
+    round_on = false;
+    AsyncUDPMessage gameAgain;
+    gameAgain.printf("%s,%s,%s",startOver.c_str(),p1.name.c_str(), p2.name.c_str());
+    udp.sendTo(gameAgain, p1.ip, UDP_TX_PORT);
+    udp.sendTo(gameAgain, p2.ip, UDP_TX_PORT);
 }
 
 void udpListener() {
@@ -120,11 +167,18 @@ void sendName() {
  */
 void broadcastMessage(String receivedMessage) {
     AsyncUDPMessage message;
-    if (receivedMessage.c_str()[0] == 'G') {
+    if (receivedMessage.c_str()[0] == 'I') {
+        i_done = true;
+    }
+    else if (receivedMessage.c_str()[0] == 'G') {
         if ((receivedMessage.c_str()[4] -'0') == 0) {
             receivedMessage = "G,O," + p1.name;
+            Serial.printf("W,%s,", p1.name.c_str());
+            Serial1.printf("W,%s,", p1.name.c_str());
         } else {
             receivedMessage = "G,O," + p2.name;
+            Serial.printf("W,%s,",p2.name.c_str());
+            Serial1.printf("W,%s,",p2.name.c_str());
         }
         game_on = false;
         round_on = false;

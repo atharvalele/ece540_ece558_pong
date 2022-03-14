@@ -12,7 +12,7 @@ void setup()
 
 void loop()
 {
-  delay(5);
+  //delay(5);
   //Send broadcast
   //Serial.println(WiFi.softAPgetStationNum());
   if(Serial1.available())

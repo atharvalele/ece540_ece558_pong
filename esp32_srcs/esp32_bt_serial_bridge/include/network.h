@@ -56,4 +56,6 @@ void sendRoundStart();
 void sendName();
 void sendMessagePong(int player, String packet);
 void broadcastMessage(String receivedMessage);
+void sendStartOver();
+void sendReplay();
 #endif
