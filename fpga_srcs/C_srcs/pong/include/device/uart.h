@@ -23,7 +23,7 @@
 #define UART_LSR_OFFSET         0x05
 
 #define UART_BUF_SIZE           512
-#define UART_RX_TOUT            5      /* 10ms timeout for reception end detection */
+#define UART_RX_TOUT            2      /* 10ms timeout for reception end detection */
 
 #define BAUD_RATE               (115200)
 #define UART_LCR_CS8            (0x03)  /* 8 bits data size */

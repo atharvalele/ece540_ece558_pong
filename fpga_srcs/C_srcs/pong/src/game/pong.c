@@ -86,10 +86,27 @@ static void ball_move()
 
     // Update position
     ball_pos.x += ball_speed.x;
-    ball_pos.y += ball_speed.y / 2;
+    ball_pos.y += ball_speed.y;
 
     // Redraw
     ball_draw(0xF);
+}
+
+// Get ball Y-speed
+static s16_t ball_get_y_speed(s16_t ball_y_pos, s16_t paddle_y_pos)
+{
+    s16_t offset = ball_y_pos - paddle_y_pos;
+
+    if (offset > 5)
+        return 2;
+    else if (offset > 0 && offset < 5)
+        return 1;
+    else if (offset < 0 && offset > -5)
+        return -1;
+    else if (offset < -5)
+        return -2;
+    else
+        return 0;
 }
 
 // Check if ball hit any paddle
@@ -102,7 +119,7 @@ static u08_t ball_check_paddle_hit(void)
         if ((ball_pos.y >= (paddle_pos[0].y - (PADDLE_HEIGHT / 2))) &&
             (ball_pos.y <= (paddle_pos[0].y + (PADDLE_HEIGHT / 2)))) {
                 ball_speed.x = -ball_speed.x;
-                ball_speed.y = (ball_pos.y - paddle_pos[0].y) % 3;
+                ball_speed.y = ball_get_y_speed(ball_pos.y, paddle_pos[0].y);
         } else {
             // Ball didn't hit, went out of bounds,
             // player 1 scores
@@ -114,7 +131,7 @@ static u08_t ball_check_paddle_hit(void)
         if ((ball_pos.y >= (paddle_pos[1].y - (PADDLE_HEIGHT / 2))) &&
             (ball_pos.y <= (paddle_pos[1].y + (PADDLE_HEIGHT / 2)))) {
                 ball_speed.x = -ball_speed.x;
-                ball_speed.y = (ball_pos.y - paddle_pos[1].y) % 3;
+                ball_speed.y = ball_get_y_speed(ball_pos.y, paddle_pos[1].y);
         } else {
             // Ball didn't hit, went out of bounds,
             // player 0 scores
@@ -404,6 +421,19 @@ void pong_task(void)
         }
     break;
 
+    case PONG_RESTART:
+        // Clear screen
+        hagl_clear_screen();
+
+        // Reset ball and scores but don't start from animation
+        reinit_paddles_ball();
+        player_scores[0] = 0;
+        player_scores[1] = 0;
+        pong_update_scores();
+
+        pong_state = PONG_WAIT_FOR_START;
+    break;
+
     default:
     break;
     }
@@ -413,4 +443,10 @@ void pong_task(void)
 void pong_set_state(pong_states_t state)
 {
     pong_state = state;
+}
+
+// Get state
+pong_states_t pong_get_state(void)
+{
+    return pong_state;
 }

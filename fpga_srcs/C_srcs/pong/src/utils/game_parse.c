@@ -44,11 +44,24 @@ void comm_task(void)
                 pong_set_state(PONG_WAIT_FOR_START);
                 i += 3;
             }
+            // Restart from the beginning
+            else if ((message[i] == 'S') && (message[i + 1] == 'O')) {
+                // Restart from the beginning
+                pong_set_state(PONG_INIT);
+                break;
+            }
+            else if ((message[i] == 'R') && (message[i + 1] == 'S') && (message[i + 2] == 'T')) {
+                // Reset from game start
+                pong_set_state(PONG_RESTART);
+                break;
+            }
             // Paddle control message
             else if (message[i] == 'P') {
-                player = message[i + 2] - '0';
-                command = message[i + 4] - '0';
-                paddle_move(player, command);
+                if (pong_get_state() == PONG_GAME_IN_PROGRESS) {
+                    player = message[i + 2] - '0';
+                    command = message[i + 4] - '0';
+                    paddle_move(player, command);
+                }
                 i += 5;
             }
             else {
