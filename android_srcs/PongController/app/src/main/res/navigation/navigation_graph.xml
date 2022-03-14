@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="edu.pdx.pongcontroller.ui.main.MainFragment"
+        android:label="main_fragment"
+        tools:layout="@layout/main_fragment" >
+        <action
+            android:id="@+id/action_mainFragment_to_waitFragment"
+            app:destination="@id/waitFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="edu.pdx.pongcontroller.ui.main.GameFragment"
+        android:label="game_fragment"
+        tools:layout="@layout/game_fragment" >
+        <action
+            android:id="@+id/action_gameFragment_to_gameOverFragment"
+            app:destination="@id/gameOverFragment" />
+        <argument
+            android:name="p1Name"
+            app:argType="string"
+            android:defaultValue="Player 1" />
+        <argument
+            android:name="p2Name"
+            app:argType="string"
+            android:defaultValue="Player 2" />
+    </fragment>
+    <fragment
+        android:id="@+id/waitFragment"
+        android:name="edu.pdx.pongcontroller.ui.main.WaitFragment"
+        android:label="wait_fragment"
+        tools:layout="@layout/wait_fragment" >
+        <action
+            android:id="@+id/action_waitFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+        <argument
+            android:name="tempName"
+            app:argType="string"
+            android:defaultValue="Player 1" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameOverFragment"
+        android:name="edu.pdx.pongcontroller.ui.main.GameOverFragment"
+        android:label="game_over_fragment"
+        tools:layout="@layout/game_over_fragment" >
+        <action
+            android:id="@+id/action_gameOverFragment_to_gameFragment"
+            app:destination="@+id/gameFragment" />
+        <argument
+            android:name="winnerName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_gameOverFragment_to_mainFragment"
+            app:destination="@+id/mainFragment" />
+    </fragment>
+</navigation>
