@@ -122,6 +122,9 @@ static u08_t ball_check_paddle_hit(void)
             (ball_pos.y <= (paddle_pos[0].y + (PADDLE_HEIGHT / 2)))) {
                 ball_speed.x = -ball_speed.x;
                 ball_speed.y = ball_get_y_speed(ball_pos.y, paddle_pos[0].y);
+
+                // Send ball hit message
+                uart_str_send("H,0");
         } else {
             // Ball didn't hit, went out of bounds,
             // player 1 scores
@@ -134,6 +137,9 @@ static u08_t ball_check_paddle_hit(void)
             (ball_pos.y <= (paddle_pos[1].y + (PADDLE_HEIGHT / 2)))) {
                 ball_speed.x = -ball_speed.x;
                 ball_speed.y = ball_get_y_speed(ball_pos.y, paddle_pos[1].y);
+
+                // Send ball hit message
+                uart_str_send("H,1");
         } else {
             // Ball didn't hit, went out of bounds,
             // player 0 scores
@@ -418,6 +424,9 @@ void pong_task(void)
         
         // Display game over
         pong_display_game_over();
+
+        // Blank out 7-segment display
+        seven_seg_blank();
 
         // Reset game objects
         reinit_paddles_ball();

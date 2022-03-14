@@ -35,7 +35,7 @@
 #define P1_SCORE_X_POS        (DISPLAY_WIDTH - P0_SCORE_X_POS - 20)
 #define P_SCORE_Y_POS         10
 
-#define MAX_SCORE             2
+#define MAX_SCORE             10
 
 #define GAME_RENDER_MS        5
 
