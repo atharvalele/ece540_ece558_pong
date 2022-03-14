@@ -6,6 +6,8 @@ void setup()
   Serial.begin(115200);
   Serial1.begin(115200);
   Serial.println("Hello");
+
+  Serial1.setTimeout(2);
   setupWiFi();
   udpListener(); 
 }

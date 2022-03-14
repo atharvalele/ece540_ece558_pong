@@ -186,6 +186,18 @@ void broadcastMessage(String receivedMessage) {
     else if (receivedMessage.c_str()[0] == 'B') {
         round_on = false;
     }
+    else if (receivedMessage.c_str()[0] == 'H') {
+        if (receivedMessage.c_str()[2] == '0') {
+            message.println("V,1");
+            udp.sendTo(message, p1.ip, UDP_TX_PORT);
+            return;
+        } else {
+            message.println("V,1");
+            udp.sendTo(message, p2.ip, UDP_TX_PORT);
+            return;
+        }
+    }
+
     Serial.println("Got from NEXYS");
     Serial.println(receivedMessage);
     message.println(receivedMessage);
