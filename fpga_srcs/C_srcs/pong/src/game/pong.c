@@ -30,6 +30,8 @@ static pong_states_t pong_state = PONG_INIT;
 
 static char message[10];
 
+wchar_t winner_name[50];
+
 /* Static Functions */
 
 // Reset paddles to starting positions
@@ -259,7 +261,21 @@ static void pong_display_game_over(void)
                   0xF, font10x20_ISO8859_15);
 }
 
+
 /* Functions */
+
+/* Write winner text on screen */
+void write_winner_name(void)
+{
+    wchar_t win_text[] = L"Winner:";
+
+    hagl_put_text(win_text, (DISPLAY_WIDTH / 2) - 80, (DISPLAY_HEIGHT / 2) + 100,
+                  0xF, font10x20_ISO8859_15);
+
+    hagl_put_text(winner_name, (DISPLAY_WIDTH / 2) - 0, (DISPLAY_HEIGHT / 2) + 100,
+                  0xF, font10x20_ISO8859_15);
+}
+
 // Move paddle
 void paddle_move(u08_t paddle, u08_t dir)
 {

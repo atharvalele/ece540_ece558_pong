@@ -9,6 +9,8 @@ static char message[UART_BUF_SIZE];
 
 static u08_t player, command;
 
+static u08_t name_len;
+
 /* Message Packet 
  * G,1
  * R,1
@@ -54,6 +56,21 @@ void comm_task(void)
                 // Reset from game start
                 pong_set_state(PONG_RESTART);
                 break;
+            }
+            // Winner name
+            else if ((message[i] == 'W')) {
+                name_len = 0;
+                i += 2;
+                // Copy into winner name
+                while (message[i] != ',') {
+                    winner_name[name_len] = message[i];
+                    name_len++;
+                    i++;
+                    if (i > rx_index)
+                        break;
+                }
+                winner_name[name_len] = '\0';
+                write_winner_name();
             }
             // Paddle control message
             else if (message[i] == 'P') {

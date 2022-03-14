@@ -35,7 +35,7 @@
 #define P1_SCORE_X_POS        (DISPLAY_WIDTH - P0_SCORE_X_POS - 20)
 #define P_SCORE_Y_POS         10
 
-#define MAX_SCORE             10
+#define MAX_SCORE             2
 
 #define GAME_RENDER_MS        5
 
@@ -64,7 +64,7 @@ typedef struct {
 /* Variables */
 extern volatile u08_t pong_render;
 extern u08_t pong_started;
-
+extern wchar_t winner_name[];
 
 /* Functions */
 void pong_init(void);
@@ -72,5 +72,6 @@ void pong_task(void);
 void pong_set_state(pong_states_t state);
 pong_states_t pong_get_state(void);
 void paddle_move(u08_t paddle, u08_t dir);
+void write_winner_name(void);
 
 #endif
