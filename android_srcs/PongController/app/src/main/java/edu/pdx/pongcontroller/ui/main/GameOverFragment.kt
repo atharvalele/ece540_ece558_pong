@@ -1,14 +1,13 @@
 package edu.pdx.pongcontroller.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import edu.pdx.pongcontroller.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import edu.pdx.pongcontroller.MainActivity
 import edu.pdx.pongcontroller.databinding.GameOverFragmentBinding
-import edu.pdx.pongcontroller.databinding.WaitFragmentBinding
 
 class GameOverFragment : Fragment() {
     // Create binding
@@ -37,7 +36,23 @@ class GameOverFragment : Fragment() {
         }
         viewModel = ViewModelProvider(this).get(GameOverViewModel::class.java)
         // TODO: Use the ViewModel
+
+        binding.startButton.setOnClickListener {
+            (activity as MainActivity).sendUDPMessage("SO")
+        }
+
+        binding.replayButton.setOnClickListener {
+            (activity as MainActivity).sendUDPMessage("RST")
+
+        }
     }
+
+    fun callParentMethod() {
+        requireActivity().onBackPressed()
+    }
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

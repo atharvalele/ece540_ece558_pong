@@ -1,10 +1,11 @@
 package edu.pdx.pongcontroller
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.net.Uri
-import android.os.StrictMode
+import android.os.*
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -21,9 +22,14 @@ open class MainActivity : AppCompatActivity(), GameFragment.OnFragmentInteractio
     private val UDP_SEND_PORT: Int = 2000
     private val UDP_RECEIVE_PORT: Int = 2001
 
+    private lateinit var vibrator: Vibrator
+
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         // Start UDP Thread
         val UDPThread = Thread(udp_DataArrival(this))
@@ -32,6 +38,9 @@ open class MainActivity : AppCompatActivity(), GameFragment.OnFragmentInteractio
 
     override fun onFragmentInteraction(uri: Uri) {
         TODO("Not yet implemented")
+    }
+
+    override fun onBackPressed() {
     }
 
     // Helper functions
@@ -60,13 +69,28 @@ open class MainActivity : AppCompatActivity(), GameFragment.OnFragmentInteractio
                 Log.d("UDP", "Received B")
             }
             "G" ->{
-//                var nav = supportFragmentManager.findFragmentById(R.id.gameNavHostFragment)
-//                val gameOverFragment = nav?.childFragmentManager?.fragments?.get(0)
-//
-//                (gameOverFragment as GameOverFragment)?.gameOver()
                 val action: GameFragmentDirections.ActionGameFragmentToGameOverFragment =
                     GameFragmentDirections.actionGameFragmentToGameOverFragment(parts[2])
                 navController.navigate(action)
+            }
+            "RST" -> {
+                val start: GameOverFragmentDirections.ActionGameOverFragmentToGameFragment =
+                    GameOverFragmentDirections.actionGameOverFragmentToGameFragment()
+                start.p1Name = parts[1]
+                start.p2Name = parts[2]
+                navController.navigate(start)
+            }
+
+            "SO" ->{
+                val replay = GameOverFragmentDirections.actionGameOverFragmentToMainFragment()
+                navController.navigate(replay)
+            }
+
+            "V" -> {
+                vibrator.vibrate(50)
+            }
+            else -> {
+
             }
         }
     }
@@ -144,4 +168,6 @@ class udp_DataArrival: Runnable {
             receiveUDP()
         }
     }
-}
+
+    }
+

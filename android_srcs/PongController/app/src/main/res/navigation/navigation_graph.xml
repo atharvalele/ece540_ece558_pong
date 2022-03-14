@@ -49,8 +49,14 @@
         android:name="edu.pdx.pongcontroller.ui.main.GameOverFragment"
         android:label="game_over_fragment"
         tools:layout="@layout/game_over_fragment" >
+        <action
+            android:id="@+id/action_gameOverFragment_to_gameFragment"
+            app:destination="@+id/gameFragment" />
         <argument
             android:name="winnerName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_gameOverFragment_to_mainFragment"
+            app:destination="@+id/mainFragment" />
     </fragment>
 </navigation>

@@ -8,4 +8,6 @@
     <string name="score">Score</string>
     <string name="waitText">Waiting for server..</string>
     <string name="gameOver">Game Over!</string>
+    <string name="start">Start</string>
+    <string name="replay">Replay</string>
 </resources>

@@ -1,16 +1,19 @@
 package edu.pdx.pongcontroller.ui.main
 
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import edu.pdx.pongcontroller.R
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import edu.pdx.pongcontroller.MainActivity
 import edu.pdx.pongcontroller.databinding.MainFragmentBinding
 
 class MainFragment : Fragment() {
@@ -32,6 +35,8 @@ class MainFragment : Fragment() {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
